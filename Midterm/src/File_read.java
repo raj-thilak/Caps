@@ -106,48 +106,90 @@ public class File_read {
 				if(data.get(k).equals("Matrix Elements,"))
 					me=k;
 			}
-			
+
 			//System.out.println("The lines are :"+ irp +" " + ci +" "+ me);
-			
+
 			ArrayList<String> tInitialRowPointer = new ArrayList<String> ();
 			ArrayList<String> tColumnIndices = new ArrayList<String> ();
 			ArrayList<String> tMatrixElements = new ArrayList<String> ();
-			
-			for(int i=irp;i<ci-1;i++)
+
+			int[] InitialRowPointer;
+			int[] ColumnIndices;
+			double[] MatrixElements;
+
+			List<String> tlist= new ArrayList<String>();
+
+			for(int i=irp+1;i<ci-1;i++)
 			{
-				tInitialRowPointer.add(data.get(i));
-				String[] tempstring = tInitialRowPointer[i].split(" ");
+				String SplitChar = "[ ]+";
+				tlist = Arrays.asList(data.get(i).trim().split(SplitChar));
+				tInitialRowPointer.addAll(tlist);
+
 			}
-			
-			//for( String q:tInitialRowPointer)
-		    	//  System.out.println(q);
-			
+
+			InitialRowPointer = new int[tInitialRowPointer.size()];
+
+			for(int i=0;i<tInitialRowPointer.size();i++)
+			{
+				InitialRowPointer[i]=Integer.parseInt(tInitialRowPointer.get(i));
+			}
+
+			/*int sum=0;
+			sum=InitialRowPointer[0]+InitialRowPointer[1];
+			System.out.println(sum);
+			 */
+
+
 			for(int i=ci+2;i<me-2;i++)
 			{
-				tColumnIndices.add(data.get(i));
-				
+				String SplitChar = "[ ]+";
+				tlist = Arrays.asList(data.get(i).trim().split(SplitChar));
+				tColumnIndices.addAll(tlist);
 			}
-			
-			for( String q:tColumnIndices)
-				System.out.println(q);
-			
-			for(int i=me-2;i<data.size();i++)
+
+			ColumnIndices = new int[tColumnIndices.size()];
+
+			for(int i=0;i<tColumnIndices.size();i++)
 			{
-				tMatrixElements.add(data.get(i));
+				ColumnIndices[i]=Integer.parseInt(tColumnIndices.get(i));
 			}
-			
-			//for( String q:tMatrixElements)
-		    	//  System.out.println(q);
-			
+
+
+			//			int sum=0;
+			//			sum=ColumnIndices[0]+ColumnIndices[1];
+			//			System.out.println(sum);
+
+			for(int i=me+2;i<data.size()-1;i++)
+			{
+				String SplitChar = "[ ]+";
+				tlist = Arrays.asList(data.get(i).trim().split(SplitChar));
+				tMatrixElements.addAll(tlist);
+			}
+
+			for(int i=0;i<tMatrixElements.size();i++)
+				System.out.println(tMatrixElements.get(i));
+
+			MatrixElements = new double[tMatrixElements.size()];
+
+			System.out.println(tMatrixElements.size());
+
+			for(int l=0;l<tMatrixElements.size();l++)
+			{
+				String str=tMatrixElements.get(l);
+				if(str!=null)
+					MatrixElements[l]=Double.parseDouble(str);
+			}
+			double sum=0;
+			sum=MatrixElements[0]+ MatrixElements[1];
+			System.out.println(sum);
+		}
+
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} 
+
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-
-
-	catch (FileNotFoundException e) {
-		e.printStackTrace();
-	} 
-
-	catch (IOException e) {
-		e.printStackTrace();
-	}
-}
 }

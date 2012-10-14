@@ -12,7 +12,7 @@ public class FirstProgram
 		Data.Factorize_LU();
 	}
 
-	int y[]={0,2,-1,3,4,2,1,6,8,7,3,2,8,10,10,9,3,2,12,3,0,14};
+	int y[]={0,2,-1,-1,4,-2,-2,8,-4,-4,-2,-4,6,-2,4,-2,-1,-3,8,-1,-3,16};
 	int cindx[]={0,1,5,4,2,7,6,3,4,7,1,3,4,1,5,6,2,5,6,2,3,7};
 	int erp[]={0,3,6,9,12,15,18,21};
 
@@ -256,7 +256,8 @@ public class FirstProgram
 		int ERPU_Shifter=0;
 		int nodelink = 0;
 		int tlink = 0;
-
+		int compare=0;
+		int comparelink=0;
 
 		//Initializing ICPL using ERPU
 		for (int i = 1; i < ERPU.length-1; i++)
@@ -269,9 +270,10 @@ public class FirstProgram
 
 		int URO_Counter= 1;
 
-		for (Rindx = 1; Rindx < erp.length; Rindx++)
+		for (Rindx = 1; Rindx <=7; Rindx++)
 		{
-			if(Rindx< erp.length){
+			if(Rindx< erp.length-1)
+			{
 				for (int j = ERPU[Rindx - 1] + 1; j <= ERPU[Rindx]; j++)
 				{
 					//Initializing ExAccum using CindxU ordered.
@@ -279,7 +281,6 @@ public class FirstProgram
 
 					//Initializing ExAccum to 0 using link_1
 					nodelink = Rindx;
-
 					while ((tlink = Link_LU[nodelink]) != 0)
 					{
 						ExAccum[Link_LU[nodelink]] = 0;
@@ -288,68 +289,137 @@ public class FirstProgram
 
 				}
 			}
+			else
+			{
+				nodelink = Rindx;
+				while ((tlink = Link_LU[nodelink]) != 0)
+				{
+					ExAccum[Link_LU[nodelink]] = 0;
+					nodelink=tlink;
+				}
+				
+			}
 
 			// Copying matrix elements in the ExAccum
 			for (int j =erp[Rindx-1]+ 1; j <= erp[Rindx]; j++)
 				ExAccum[cindx[j]] = y[j];
 
-
 			rx = 0;
 			double multiplier=0;
-
+			
 
 			nodelink = Rindx;
-			while ((tlink = Link_LU[nodelink]) != 0)
+			while ((tlink = Link_LU[nodelink])!= 0)
 			{
 				rx = tlink;
 				multiplier = ExAccum[rx];
+
 				for(int z=ERPU[rx]-1;z<=ERPU[rx];z++)
 				{
 					ExAccum[CindxU_Ordered[z]]=ExAccum[CindxU_Ordered[z]] - (multiplier*URO[z]);
 				}
-				LCO[ICPL[rx]] = ExAccum[rx] * Diagonal[rx];
 
+				LCO[ICPL[rx]] = ExAccum[rx] * Diagonal[rx];
 				ICPL[rx]++;
-				if(ICPL[rx] < CindxU_Ordered.length){
-					int update_rx_link = CindxU_Ordered[ICPL[rx]], temprxlink;
-					while ((temprxlink = Link_LU[update_rx_link]) != 0)
+
+				
+				int tlinker1=0;
+				if(ICPL[rx]<=ERPU[rx])
+				{
+
+					nodelink = rx;
+					if(Link_LU[CindxU_Ordered[ICPL[rx]]]==0)
+						Link_LU[CindxU_Ordered[ICPL[rx]]]=rx;
+
+					else  
 					{
-						if(temprxlink == 0){
-							Link_LU[update_rx_link] = rx;
+						nodelink=CindxU_Ordered[ICPL[rx]];
+
+						while((tlinker1=Link_LU[nodelink])!=0)
+						{
+						
+						
+							if (tlinker1==rx)
+						{
+						//	Link_LU[rx]=0;
+							compare=rx;
+							comparelink=nodelink;							
 							break;
 						}
-						update_rx_link = temprxlink;
+							
+						
+							if((Link_LU[tlinker1]==0))
+						{
+								
+								Link_LU[tlinker1]=rx;
+								break;
+						}
+						
+							nodelink=tlinker1;	
+							
+						}
 					}
+
 				}
-				nodelink = tlink;
+
+//				if(Link_LU[tlink]==rx)
+//					break;
+//				else
+					nodelink = tlink;
 
 			}
+
+			nodelink=Rindx;
 			while ((tlink = Link_LU[nodelink]) != 0)
 			{
+//				if((tlink==rx)&&(Link_LU[tlink]==0))	
+//				break;	
+				
 				Link_LU[nodelink] = 0;
 				nodelink = tlink;
 			}
+			
+			if (compare==rx)
+				Link_LU[comparelink]=compare;
+				
 
+			// Updating Diagonal Value 
 			Diagonal[Rindx] = 1 / ExAccum[Rindx];
 
+			// Updating URO Value
 			for (int j = ERPU[Rindx - 1] + 1; j <= ERPU[Rindx]; j++)
 			{
 				URO[URO_Counter] = Diagonal[Rindx] * ExAccum[CindxU_Ordered[j]];
 				URO_Counter++;            
 			}
 
-			if (ICPL[Rindx]<CindxU_Ordered.length){
-				int update_Rindx_link = CindxU_Ordered[ICPL[Rindx]], tempRindxlink;
-				while ((tempRindxlink = Link_LU[update_Rindx_link]) != 0)
+			// Adding Rindx to Linked List
+			int tlinker=0;
+			nodelink=CindxU_Ordered[ICPL[Rindx]];
+			while ((tlink = Link_LU[nodelink]) != 0)
+			{
+				
+				if (Link_LU[tlink]==0)
 				{
-					if(tempRindxlink == 0){
-						Link_LU[update_Rindx_link] = rx;
-						break;
-					}
-					update_Rindx_link = tempRindxlink;
+					//tlinker=tlink;
+					
+					Link_LU[tlink]=Rindx;
+					tlinker=1;
+					break;
 				}
+				nodelink=tlink;
 			}
+
+			if (tlinker ==0)
+				//			{Link_LU[CindxU_Ordered[ICPL[tlinker]]]=Rindx;
+				//			else
+
+				Link_LU[CindxU_Ordered[ICPL[Rindx]]]=Rindx;
 		}
+
+		System.out.println("\n Position");
+		for(int q=0;q<15;q++)
+			System.out.print("\t"+ q);
 
 		System.out.println("\n Diagonal");
 		for(int q=0;q<Diagonal.length;q++)

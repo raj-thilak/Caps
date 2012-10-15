@@ -3,8 +3,11 @@ public class main_routine {
 
 	public static void main (String[] args){
 		
-		File_read readobject=new File_read();	//Create Object to Class File_read
-		readobject.fileread();	//Uses the object to execute the method 'fileread'
-	
+		Matrix Element=new Matrix();	//Create Object to Class File_read
+		Element.fileread();	//Uses the object to execute the method 'fileread'
+
+		Element.Create_LU();
+		Element.rowtocolumn();
+		Element.columntorow();
 	}
 }

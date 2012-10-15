@@ -259,8 +259,9 @@ public class Matrix {
 	int[] Switch;//Switch Array used in creating LU Data structure
 	int[] Link ;// Self referential linked-list array which stores various links
 	//	int[] Link_LU= new int[erp.length];
-	//	int[] nxtcolptr = new int[erp.length];// Next Column Pointer array used in ordering 
-	//	int[] nxtrowptr = new int[erp.length];// Next row pointer array used in ordering
+	int[] nxtcolptr;// Next Column Pointer array used in ordering 
+	int[] nxtrowptr;// Next row pointer array used in ordering
+	
 	//	int[] ICPL = new int[erp.length];
 	//	double[]ExAccum= new double[erp.length];
 	//	double[] URO = new double[CindxU.length+1];
@@ -396,9 +397,103 @@ public class Matrix {
 		//	        	for(int q=0;q<Switch.length;q++)
 		//	        		System.out.print("\t"+Switch[q]);
 		//	        	
-		       	System.out.println("\n Link");
+		//       	System.out.println("\n Link");
 		//	        	for(int q=0;q<Link.length;q++)
 		//	        		System.out.print("\t"+Link[q]);
 	}
 
+	public void rowtocolumn()
+	{
+		int tposition = 0;
+		nxtcolptr = new int[erp.length];
+		int[] t_nxcolpt = new int[erp.length];
+
+		//Counting the no of elements in a row
+		for (int i = 1; (i < CindxU.length - 1); i++)
+		{
+			if (CindxU[i] == 0)
+				break;
+			tposition = CindxU[i];
+			t_nxcolpt[tposition]++;
+
+		}
+		//Performing a running sum on the next column pointer 
+		nxtcolptr[1] = 1;
+
+		for (int i = 2; i < erp.length; i++)
+		{
+			nxtcolptr[i] = nxtcolptr[i - 1] + t_nxcolpt[i - 1];
+			//System.out.println(nxtcolptr[i] + " ");
+		}
+
+
+		int tstoreelement;
+		for (int i = 1; i < ERPU.length - 1; i++)
+		{
+			for (int j = ERPU[i - 1] + 1; j <= ERPU[i]; j++)
+			{
+				tstoreelement = nxtcolptr[CindxU[j]];
+				RindxU[tstoreelement] = i;
+				nxtcolptr[CindxU[j]]++;
+			}
+		}
+
+		for (int i = 1; i <nxtcolptr.length; i++)
+			ECPU[i] = nxtcolptr[i] - 1;
+
+//		System.out.println("\n RindxU");
+//		for(int q=0;q<RindxU.length;q++)
+//			System.out.print("\t"+RindxU[q]);
+//
+//		System.out.println("\n ECPU");
+//		for(int q=0;q<ECPU.length;q++)
+//			System.out.print("\t"+ECPU[q]);
+	}
+
+	public void columntorow()
+	{
+		int tposition = 0;
+		nxtrowptr = new int[erp.length];
+		int[] t_nxtrowptr = new int[erp.length];
+
+
+		//Counting the no of elements in a row
+		for (int i = 1; i < RindxU.length - 1; i++)
+		{
+			if (RindxU[i] == 0)
+				break;
+			tposition = RindxU[i];
+			t_nxtrowptr[tposition]++;
+		}
+
+		//Performing a running sum on the next row pointer 
+		nxtrowptr[1] = 1;
+		for (int i = 2; i < erp.length; i++)
+			nxtrowptr[i] = nxtrowptr[i - 1] + t_nxtrowptr[i - 1];
+
+		int tstore;
+		for (int i = 1; i < ECPU.length - 1; i++)
+		{
+			for (int j = ECPU[i-1]+1; j <= ECPU[i]; j++)
+			{
+				tstore = nxtrowptr[RindxU[j]];
+				CindxU_Ordered[tstore] = i;
+				nxtrowptr[RindxU[j]]++;
+			}
+		}
+
+		for (int i = 1; i < nxtrowptr.length-1; i++)
+			ERPU[i] = nxtrowptr[i]-1;
+
+//		System.out.println("\n CindxU Ordered");
+//		for(int q=0;q<CindxU_Ordered.length;q++)
+//			System.out.print("\t"+CindxU_Ordered[q]);
+//
+//		System.out.println("\n ERPU");
+//		for(int q=0;q<ERPU.length;q++)
+//			System.out.print("\t"+ERPU[q]);
+
+	}
+
+	
 }

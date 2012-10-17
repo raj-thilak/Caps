@@ -5,6 +5,7 @@ import java.util.*;
 //File_read is used to read the data file and write it line by line.
 
 public class Matrix {
+
 	/*
 	 * Declare InitialRowPointer , Column Indices and Matrix Elements arrays as Class Variables
 	 * Class variables are those variable that can be accessed by any method
@@ -16,7 +17,42 @@ public class Matrix {
 	double[] y;
 	int[] cindx;
 	int[] erp;
+	int erpcount, erpold;//erpcount and erpold variable is used as references for identifying columnnumbers and rownumbers
+	int[]rownumber;//Stores the row number of the element
+	//List<Integer> columnnumber=new ArrayList<Integer>();//Stores the column number of the element
+	//int[] Col=new int[columnnumber.size()];
+	int tdiagonal, tU;//Temporary diagonal and U elements for testing accuracy
+	int[] tdiagonalarray;// Temporary Diagonal Array which stores diagonal Elements in an Array
+	//int k,i=0;
+	int MinNode;//Variable for storing Min Node value
+	int[] CindxU= new int [8500]; // An array which stores column indices of U Factor
+	int[] RindxU= new int[CindxU.length];// An array which stores row indices of U Factor
+	int[] CindxU_Ordered = new int[CindxU.length];// An array which stores ordered column indices values of U
+	int[] ERPU;// An array which stores End of Row Pointers of U
+	int[] ECPU;//An array which stores End of column Pointers of U
+	int[] Switch;//Switch Array used in creating LU Data structure
+	int[] Link ;// Self referential linked-list array which stores various links
+	int[] Link_LU;
+	int[] nxtcolptr;// Next Column Pointer array used in ordering 
+	int[] nxtrowptr;// Next row pointer array used in ordering
 
+	int[] ICPL;
+	double[]ExAccum;
+	double[] URO;
+	double[] LCO;
+	double[] Diagonal;
+
+	int ERPUCounter = 1;
+	int Rindx=0;
+	int nextlink;
+
+	
+	double[] B;
+	double[] X;
+	double[] W;
+	int[] LRO;
+	
+	
 	// Sample routine for testing if number of column indices is equal to number of matrix elements	        
 	/*
 	if(y.length==cindx.length)
@@ -28,7 +64,7 @@ public class Matrix {
 
 	//System.out.println(erp.length);	
 
-	// Create a method to read file
+// Create a method to read file
 
 	public void fileread() {
 
@@ -241,37 +277,6 @@ public class Matrix {
 		}
 	}
 
-
-
-	int erpcount, erpold;//erpcount and erpold variable is used as references for identifying columnnumbers and rownumbers
-	int[]rownumber;//Stores the row number of the element
-	//List<Integer> columnnumber=new ArrayList<Integer>();//Stores the column number of the element
-	//int[] Col=new int[columnnumber.size()];
-	int tdiagonal, tU;//Temporary diagonal and U elements for testing accuracy
-	int[] tdiagonalarray;// Temporary Diagonal Array which stores diagonal Elements in an Array
-	int k,i=0;
-	int MinNode;//Variable for storing Min Node value
-	int[] CindxU= new int [8500]; // An array which stores column indices of U Factor
-	int[] RindxU= new int[CindxU.length];// An array which stores row indices of U Factor
-	int[] CindxU_Ordered = new int[CindxU.length];// An array which stores ordered column indices values of U
-	int[] ERPU;// An array which stores End of Row Pointers of U
-	int[] ECPU;//An array which stores End of column Pointers of U
-	int[] Switch;//Switch Array used in creating LU Data structure
-	int[] Link ;// Self referential linked-list array which stores various links
-	//	int[] Link_LU= new int[erp.length];
-	int[] nxtcolptr;// Next Column Pointer array used in ordering 
-	int[] nxtrowptr;// Next row pointer array used in ordering
-	
-	//	int[] ICPL = new int[erp.length];
-	//	double[]ExAccum= new double[erp.length];
-	//	double[] URO = new double[CindxU.length+1];
-	//	double[] LCO = new double[CindxU.length+1];
-	//	double[] Diagonal=new double[erp.length];
-
-	int ERPUCounter = 1;
-	int Rindx=0;
-	int nextlink;
-
 	public void Create_LU()
 	{
 
@@ -283,21 +288,22 @@ public class Matrix {
 		Link = new int[erp.length];
 		int ERPUCounter = 1;
 		int counter=1;
+		int k=0;
 
 		for(int j=1;j<erp.length-1;j++)
 		{
 			MinNode=100000;
 			erpold=erp[j-1]+1;
 			erpcount=erp[j];
-			
+
 
 			for(k=erpold;k<=erpcount;k++)
 			{
 				if(cindx[k]==j)
 				{
-//					System.out.println(y[k]);
-//					System.out.println(counter);
-//					counter++;
+					//					System.out.println(y[k]);
+					//					System.out.println(counter);
+					//					counter++;
 					continue;
 				}
 				else if((cindx[k]!=j)&& cindx[k]>j)
@@ -338,10 +344,10 @@ public class Matrix {
 					if(nextlink==CindxU[z])
 						continue;
 
-//					if(MinNode==00000)
-//						MinNode=CindxU[z];
-//					else if((CindxU[z]<MinNode)&&(CindxU[z]>j))
-//						MinNode=CindxU[z];
+					//					if(MinNode==00000)
+					//						MinNode=CindxU[z];
+					//					else if((CindxU[z]<MinNode)&&(CindxU[z]>j))
+					//						MinNode=CindxU[z];
 
 					if((CindxU[z]>j)&&(Switch[CindxU[z]]!=j))
 					{
@@ -351,7 +357,7 @@ public class Matrix {
 
 						ERPU[j]=ERPUCounter;
 						ERPUCounter++;
-						
+
 						if(MinNode==100000)
 							MinNode=CindxU[z];
 						else if((CindxU[z]<MinNode)&&(CindxU[z]>j))
@@ -380,7 +386,7 @@ public class Matrix {
 			Link[j]=0;
 			Link[MinNode]=j;
 		}
-		
+
 		//	        	System.out.println("Pos");
 		//	        	for(int q=0;q<13;q++)
 		//	        		System.out.print("\t"+q);
@@ -409,6 +415,7 @@ public class Matrix {
 		int[] t_nxcolpt = new int[erp.length];
 
 		//Counting the no of elements in a row
+
 		for (int i = 1; (i < CindxU.length - 1); i++)
 		{
 			if (CindxU[i] == 0)
@@ -441,13 +448,13 @@ public class Matrix {
 		for (int i = 1; i <nxtcolptr.length; i++)
 			ECPU[i] = nxtcolptr[i] - 1;
 
-//		System.out.println("\n RindxU");
-//		for(int q=0;q<RindxU.length;q++)
-//			System.out.print("\t"+RindxU[q]);
-//
-//		System.out.println("\n ECPU");
-//		for(int q=0;q<ECPU.length;q++)
-//			System.out.print("\t"+ECPU[q]);
+		//		System.out.println("\n RindxU");
+		//		for(int q=0;q<RindxU.length;q++)
+		//			System.out.print("\t"+RindxU[q]);
+		//
+		//		System.out.println("\n ECPU");
+		//		for(int q=0;q<ECPU.length;q++)
+		//			System.out.print("\t"+ECPU[q]);
 	}
 
 	public void columntorow()
@@ -485,15 +492,235 @@ public class Matrix {
 		for (int i = 1; i < nxtrowptr.length-1; i++)
 			ERPU[i] = nxtrowptr[i]-1;
 
-//		System.out.println("\n CindxU Ordered");
-//		for(int q=0;q<CindxU_Ordered.length;q++)
-//			System.out.print("\t"+CindxU_Ordered[q]);
-//
-//		System.out.println("\n ERPU");
-//		for(int q=0;q<ERPU.length;q++)
-//			System.out.print("\t"+ERPU[q]);
+		//		System.out.println("\n CindxU Ordered");
+		//		for(int q=0;q<CindxU_Ordered.length;q++)
+		//			System.out.print("\t"+CindxU_Ordered[q]);
+		//
+		//		System.out.println("\n ERPU");
+		//		for(int q=0;q<ERPU.length;q++)
+		//			System.out.print("\t"+ERPU[q]);
 
 	}
 
+	public void Factorize_LU() 
+	{
+		//int rx = 0;
+		int ERPU_Shifter=0;
+		int nodelink = 0;
+		int tlink = 0;
+		int compare=0;
+		int comparelink=0;
+
+		Link_LU= new int[erp.length];
+		ICPL = new int[erp.length];
+		ExAccum= new double[erp.length];
+		URO = new double[CindxU.length];
+		LCO = new double[CindxU.length];
+		Diagonal=new double[erp.length];
+
+		//Initializing ICPL using ERPU
+		for (int i = 1; i < ERPU.length-1; i++)
+		{
+			ERPU_Shifter= ERPU[i - 1];
+			ICPL[i] = ERPU_Shifter + 1;
+			//System.out.print(ICPL[i] + " ");
+		}
+
+		//		for(int x=1;x<8169;x++)
+		//			System.out.println(CindxU_Ordered[x]);
+
+		int URO_Counter= 1;
+
+		for (Rindx = 1; Rindx<=erp.length-1; Rindx++)
+		{
+			if(Rindx<erp.length-1)
+			{
+				for (int j = ERPU[Rindx - 1] + 1; j <= ERPU[Rindx]; j++)
+				{
+					//Initializing ExAccum using CindxU ordered.
+					ExAccum[CindxU_Ordered[j]] = 0.00;
+				}
+			}
+
+			//Initializing ExAccum to 0 using link_1
+			int node = Rindx, templink;
+			while ((templink = Link_LU[node]) != 0)
+			{
+				ExAccum[templink] = 0.00;
+				node=templink;
+			}
+
+			// Copying matrix elements in the ExAccum
+			for (int j =erp[Rindx-1]+ 1; j <= erp[Rindx]; j++)
+				ExAccum[cindx[j]] = y[j];
+
+			double multiplier=0;
+
+			List<Integer> Nodes = new ArrayList<Integer>();
+			int rx1;
+
+			while((Link_LU[Rindx])!=0){
+				nodelink = Rindx;
+				while(true){
+					if((rx1 = Link_LU[nodelink])!= 0)
+					{
+						Link_LU[nodelink] = 0;
+						Nodes.add(rx1);
+						nodelink = rx1;
+					}
+					else
+						break;
+				}
+
+				int rxlink=0, nextnod;
+
+				for(Integer rx:Nodes)
+				{
+					multiplier = ExAccum[rx];
+
+					for(int z=ERPU[rx-1]+1;z<=ERPU[rx];z++)
+					{
+						ExAccum[CindxU_Ordered[z]]=ExAccum[CindxU_Ordered[z]] - (multiplier*URO[z]);
+					}
+
+					if(ExAccum[rx] == 0.0)
+						System.out.println(rx + "\t"+ Rindx+"Stupidity");
+
+					if(ICPL[rx] < 8169)
+						LCO[ICPL[rx]] = ExAccum[rx] * Diagonal[rx];
+
+					ICPL[rx]++;
+
+					if(ICPL[rx] < 8169)
+						rxlink = CindxU_Ordered[ICPL[rx]];
+
+
+					if(ICPL[rx]<=ERPU[rx])
+					{
+						while((nextnod = Link_LU[rxlink])!= 0){
+							rxlink = Link_LU[nextnod];
+							if(rxlink == 0){
+								rxlink = nextnod;
+								break;
+							}
+						}
+
+						Link_LU[rxlink] = rx;
+					}
+				}
+			}
+			// Updating Diagonal Value 
+			Diagonal[Rindx] = 1 / ExAccum[Rindx];
+
+			// Updating URO Value
+			if(Rindx < 662){
+				for (int j = ERPU[Rindx - 1] + 1; j <= ERPU[Rindx]; j++)
+				{
+					URO[URO_Counter] = Diagonal[Rindx] * ExAccum[CindxU_Ordered[j]];
+					URO_Counter++;            
+				}
+
+				// Adding Rindx to Linked List
+				int linkrownumber, NextNode;
+
+				linkrownumber = CindxU_Ordered[ICPL[Rindx]];
+
+				while((NextNode = Link_LU[linkrownumber])!= 0){
+					linkrownumber = Link_LU[NextNode];
+					if(linkrownumber == 0){
+						linkrownumber = NextNode;
+						break;
+					}
+				}
+				Link_LU[linkrownumber] = Rindx;
+			}
+
+		}
+
+		//
+		//		System.out.println("\n Position");
+		//		for(int q=0;q<15;q++)
+		//			System.out.print("\t"+ q);
+		//
+		//		System.out.println("\n Diagonal");
+		//		for(int q=0;q<Diagonal.length;q++)
+		//			System.out.println("\t"+Diagonal[q]);
+		//
+		//		System.out.println("\n ERPU");
+		//		for(int q=0;q<ERPU.length;q++)
+		//			System.out.print("\t"+ERPU[q]);
+		//
+		//		System.out.println("\n URO");
+		//		for(int q=1;q<2000;q++)
+		//			System.out.println("\t"+URO[q]);
+		//
+		//		System.out.println("\n CindxU_Ordered");
+		//		for(int q=0;q<CindxU_Ordered.length;q++)
+		//			System.out.print("\t"+CindxU_Ordered[q]);
+		//
+		//		System.out.println("\n LCO");
+		//		for(int q=0;q<LCO.length;q++)
+		//			System.out.print("\t"+LCO[q]);
+		//
+		//		System.out.println("\n ICPL");
+		//		for(int q=0;q<ICPL.length;q++)
+		//			System.out.print("\t"+ICPL[q]);
+		//
+		//		System.out.println("\n LINK-LU");
+		//		for(int q=0;q<Link_LU.length;q++)
+		//			System.out.println("\t"+Link_LU[q]);
+		//
+		//		System.out.println("\n Ex-Accum");
+		//		for(int q=0;q<ExAccum.length;q++)
+		//			System.out.print("\t"+ExAccum[q]);
+	}
+
+	public void Forward_Substitue()
+	{
+
+		 B = new double[erp.length];
+		 X = new double[erp.length];
+		 W =new double[erp.length];
+		 LRO = new int[CindxU_Ordered.length];
+		
+		double B_initial = y[1] ;
+		
+		B[1] = B_initial;
+		
+		for(int l=0;l<erp.length;l++)
+			W[l]=B[l];
+		
+		for(int l=1;l<CindxU_Ordered.length;l++)
+			LRO[l]=CindxU_Ordered[l];
+		
+		int temp;		
+		for(int i = 1;  i <=662; i++)
+		{
+			
+			for(int j = ERPU[i -1]+1; j <= ERPU[i] ; j++)
+			{
+		//		temp=LRO[j];
+				W[LRO[j]] = W[LRO[j]] - LCO[j]*W[i];
+			}
+		}
+
+		
+		for(int b=1; b< 663; b++)
+			X[b] = W[b] * Diagonal[b];
+		
+		
+		for(int k=662; k >= 1; k--)
+		{
+			
+			for(int j = ERPU[k];j >= ERPU[k-1]+1;j--)
+			{
+				X[k] = X[k] - X[k+1]*URO[j];
+			}
+		}
 	
+		System.out.println("THE END");
+		for(double i:X)
+			System.out.println(i);
+	}
+
 }

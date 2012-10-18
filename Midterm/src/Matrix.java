@@ -17,6 +17,7 @@ public class Matrix {
 	double[] y;
 	int[] cindx;
 	int[] erp;
+	int erp_length=0;
 	int erpcount, erpold;//erpcount and erpold variable is used as references for identifying columnnumbers and rownumbers
 	int[]rownumber;//Stores the row number of the element
 	//List<Integer> columnnumber=new ArrayList<Integer>();//Stores the column number of the element
@@ -25,9 +26,12 @@ public class Matrix {
 	int[] tdiagonalarray;// Temporary Diagonal Array which stores diagonal Elements in an Array
 	//int k,i=0;
 	int MinNode;//Variable for storing Min Node value
-	int[] CindxU= new int [8500]; // An array which stores column indices of U Factor
-	int[] RindxU= new int[CindxU.length];// An array which stores row indices of U Factor
-	int[] CindxU_Ordered = new int[CindxU.length];// An array which stores ordered column indices values of U
+	int[] CindxU; // An array which stores column indices of U Factor
+	int[] RindxU;// An array which stores row indices of U Factor
+	int[] CindxU_Ordered;// An array which stores ordered column indices values of U
+	
+	List<Integer> tCindxU =new ArrayList<Integer>();
+	
 	int[] ERPU;// An array which stores End of Row Pointers of U
 	int[] ECPU;//An array which stores End of column Pointers of U
 	int[] Switch;//Switch Array used in creating LU Data structure
@@ -46,13 +50,16 @@ public class Matrix {
 	int Rindx=0;
 	int nextlink;
 
-	
+
 	double[] B;
 	double[] X;
 	double[] W;
 	int[] LRO;
-	
-	
+
+	int[] str;
+
+
+
 	// Sample routine for testing if number of column indices is equal to number of matrix elements	        
 	/*
 	if(y.length==cindx.length)
@@ -64,7 +71,7 @@ public class Matrix {
 
 	//System.out.println(erp.length);	
 
-// Create a method to read file
+	// Create a method to read file
 
 	public void fileread() {
 
@@ -112,7 +119,9 @@ public class Matrix {
 
 			/*
 			 **Routine for Identifying Initial Row Pointers,Column Indices and Matrix Elemnts*
+			 *
 			 *Compare the data read and check if it is equal to the String value "Initial Row Pointer"
+			 *
 			 *If the string is equal update the vale of corresponding variable 
 			 */
 
@@ -205,10 +214,6 @@ public class Matrix {
 			}
 
 
-			//			int sum=0;
-			//			sum=ColumnIndices[0]+ColumnIndices[1];
-			//			System.out.println(sum);
-
 			for(int i=me+2;i<data.size()-1;i++)
 			{
 				String SplitChar = "[ ]+";
@@ -245,7 +250,7 @@ public class Matrix {
 
 			y= new double[MatrixElements.length+1];
 			cindx= new int[ColumnIndices.length+1];
-			erp= new int[InitialRowPointer.length];
+			erp= new int[InitialRowPointer.length+1];
 
 
 			for(int l=0;l<MatrixElements.length;l++)
@@ -287,9 +292,10 @@ public class Matrix {
 		Switch= new int[erp.length];
 		Link = new int[erp.length];
 		int ERPUCounter = 1;
-		int counter=1;
+		
 		int k=0;
-
+		tCindxU.add(0); 
+		
 		for(int j=1;j<erp.length-1;j++)
 		{
 			MinNode=100000;
@@ -311,7 +317,7 @@ public class Matrix {
 					//columnnumber.add(cindx[k]);
 					//Updating CindxU
 
-					CindxU[ERPUCounter]=cindx[k];
+					tCindxU.add(cindx[k]);
 
 					//Updating Min Node Value
 
@@ -321,8 +327,10 @@ public class Matrix {
 						MinNode = cindx[k];
 
 					//Updating Switch Array
-
-					Switch[CindxU[ERPUCounter]] = j;
+					int t_switch;
+					t_switch=tCindxU.get(ERPUCounter);
+					
+					Switch[t_switch] = j;
 
 					//ERPU Update
 
@@ -341,7 +349,7 @@ public class Matrix {
 			{
 				for(int z=ERPU[nextlink-1]+1;z<=ERPU[nextlink];z++)
 				{
-					if(nextlink==CindxU[z])
+					if(nextlink==tCindxU.get(z))
 						continue;
 
 					//					if(MinNode==00000)
@@ -349,19 +357,19 @@ public class Matrix {
 					//					else if((CindxU[z]<MinNode)&&(CindxU[z]>j))
 					//						MinNode=CindxU[z];
 
-					if((CindxU[z]>j)&&(Switch[CindxU[z]]!=j))
+					if((tCindxU.get(z)>j)&&(Switch[tCindxU.get(z)]!=j))
 					{
-						CindxU[ERPUCounter]=CindxU[z];
+						tCindxU.add(ERPUCounter,tCindxU.get(z));
 
-						Switch[CindxU[ERPUCounter]]=j;
+						Switch[tCindxU.get(ERPUCounter)]=j;
 
 						ERPU[j]=ERPUCounter;
 						ERPUCounter++;
 
 						if(MinNode==100000)
-							MinNode=CindxU[z];
-						else if((CindxU[z]<MinNode)&&(CindxU[z]>j))
-							MinNode=CindxU[z];
+							MinNode=tCindxU.get(z);
+						else if((tCindxU.get(z)<MinNode)&&(tCindxU.get(z)>j))
+							MinNode=tCindxU.get(z);
 					}
 
 				}
@@ -371,20 +379,30 @@ public class Matrix {
 
 			tlink=MinNode;
 
-			while((nextlink=Link[tlink])!=0)
-			{
-				if(Link[nextlink]==0)
-				{	        			
-					MinNode=nextlink;
-					break;
+			if(MinNode != 100000){
+				while((nextlink=Link[tlink])!=0)
+				{
+					if(Link[nextlink]==0)
+					{	        			
+						MinNode=nextlink;
+						break;
+					}
+
+					tlink=nextlink;
 				}
 
-				tlink=nextlink;
+
+				Link[j]=0;
+				Link[MinNode]=j;
 			}
-
-
-			Link[j]=0;
-			Link[MinNode]=j;
+			
+			int CindxCounter=0;
+			CindxU=new int[tCindxU.size()];
+			for(int i=0;i<tCindxU.size();i++)
+			{
+				CindxU[i]=tCindxU.get(i);
+				CindxCounter++;
+			}
 		}
 
 		//	        	System.out.println("Pos");
@@ -413,6 +431,8 @@ public class Matrix {
 		int tposition = 0;
 		nxtcolptr = new int[erp.length];
 		int[] t_nxcolpt = new int[erp.length];
+		RindxU= new int[CindxU.length];
+		
 
 		//Counting the no of elements in a row
 
@@ -462,7 +482,8 @@ public class Matrix {
 		int tposition = 0;
 		nxtrowptr = new int[erp.length];
 		int[] t_nxtrowptr = new int[erp.length];
-
+		
+		CindxU_Ordered = new int[CindxU.length];
 
 		//Counting the no of elements in a row
 		for (int i = 1; i < RindxU.length - 1; i++)
@@ -517,6 +538,8 @@ public class Matrix {
 		URO = new double[CindxU.length];
 		LCO = new double[CindxU.length];
 		Diagonal=new double[erp.length];
+		
+		
 
 		//Initializing ICPL using ERPU
 		for (int i = 1; i < ERPU.length-1; i++)
@@ -586,12 +609,12 @@ public class Matrix {
 					if(ExAccum[rx] == 0.0)
 						System.out.println(rx + "\t"+ Rindx+"Stupidity");
 
-					if(ICPL[rx] < 8169)
+					if(ICPL[rx] < CindxU_Ordered.length)
 						LCO[ICPL[rx]] = ExAccum[rx] * Diagonal[rx];
 
 					ICPL[rx]++;
 
-					if(ICPL[rx] < 8169)
+					if(ICPL[rx] < CindxU_Ordered.length)
 						rxlink = CindxU_Ordered[ICPL[rx]];
 
 
@@ -678,49 +701,159 @@ public class Matrix {
 	public void Forward_Substitue()
 	{
 
-		 B = new double[erp.length];
-		 X = new double[erp.length];
-		 W =new double[erp.length];
-		 LRO = new int[CindxU_Ordered.length];
-		
-		double B_initial = y[1] ;
-		
+		B = new double[662];
+		X = new double[erp.length];
+		W =new double[erp.length];
+		double[] new_X= new double[662];
+
+		LRO = new int[CindxU_Ordered.length];
+		int d=0;
+
+		double B_initial = 1408.66803 ;
+
 		B[1] = B_initial;
-		
-		for(int l=0;l<erp.length;l++)
-			W[l]=B[l];
-		
+
+		for(int k=1; k<=662;k++)
+		{
+			if(str[k]==1)
+			{
+				d=k;
+			}
+		}
+		B[d]=B[1];
+		B[1]=0;
+
+		for(int k=1; k<662;k++)
+			W[k]=B[k];
+
 		for(int l=1;l<CindxU_Ordered.length;l++)
 			LRO[l]=CindxU_Ordered[l];
-		
+
 		int temp;		
 		for(int i = 1;  i <=662; i++)
 		{
-			
+
 			for(int j = ERPU[i -1]+1; j <= ERPU[i] ; j++)
 			{
-		//		temp=LRO[j];
+				//		temp=LRO[j];
 				W[LRO[j]] = W[LRO[j]] - LCO[j]*W[i];
 			}
 		}
 
-		
+
 		for(int b=1; b< 663; b++)
 			X[b] = W[b] * Diagonal[b];
-		
-		
+
+
 		for(int k=662; k >= 1; k--)
 		{
-			
+
 			for(int j = ERPU[k];j >= ERPU[k-1]+1;j--)
 			{
 				X[k] = X[k] - X[k+1]*URO[j];
 			}
 		}
-	
+
+		for(int i=1;i<662;i++)
+		{
+			for(int j=1;j<662;j++)
+			{
+				if(str[j]==i)
+					new_X[i]=X[j];
+			}
+		}
+
 		System.out.println("THE END");
-		for(double i:X)
+		for(double i:new_X)
 			System.out.println(i);
 	}
 
+	public void Tinney_Ordering()
+	{
+		int temp,temp1,temp2;
+		int[] valency= new int[663];
+		str= new int[663];
+
+		for(int i=1; i<=662;i++)
+		{
+			for(int j=erp[i-1]+1;j<=erp[i];j++)
+			{
+				if(i!=cindx[j])
+					valency[i]= valency[i]+1;
+			}
+
+
+		}
+
+		for(int i=1;i<=662;i++)
+			str[i]=i;
+
+		for(int i=1;i<=662;i++)
+		{
+			for(int j=1;j<662;j++)
+			{
+				if(valency[j+1]<valency[j])
+				{
+					temp1=valency[j+1];
+					temp2=str[j+1];
+
+					valency[j+1]=valency[j];
+					str[j+1]=str[j];
+
+					valency[j]= temp1;
+					str[j]= temp2;
+				}
+			}
+		}
+
+		int tinney_irp[] = new int[erp.length];
+		int tinney_cindx[]=new int[2475];
+		double tinney_Matrix[]=new double[2475];
+		int k=1,t=0;
+		int v1,p;
+
+		for(int i=1;i<=662;i++)
+		{
+			v1=str[i];
+			//	int j=erp[i-1]+1;j<=erp[i];j++
+			for(int j=erp[v1-1]+1;j<=erp[v1];j++)
+			{
+				p=cindx[j];
+				if(p==v1)
+				{
+					tinney_Matrix[k]=y[j];
+					tinney_cindx[k]=i;
+					k=k+1;
+					t=t+1;
+				}
+				else
+				{
+					for(int m=1;m<=662;m++)
+					{
+						if(str[m]==p)
+						{
+							tinney_Matrix[k]=y[j];
+							tinney_cindx[k]=m;
+							k=k+1;
+							t=t+1;
+							break;
+						}
+					}
+				}
+			}
+
+			tinney_irp[i]=t;
+		}
+
+		for(int i=1;i<erp.length;i++)
+			erp[i]=tinney_irp[i];
+
+		for(int j=1;j<cindx.length;j++)
+			cindx[j]=tinney_cindx[j];
+
+		for(int l=1;l<y.length;l++)
+			y[l]=tinney_Matrix[l];
+
+		System.out.println();
+	}
 }

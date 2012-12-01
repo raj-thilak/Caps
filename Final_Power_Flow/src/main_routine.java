@@ -6,6 +6,8 @@ public class main_routine {
 	Sub_Routines Element = new Sub_Routines();
 	Element.Create_Y_Bus();
 	Element.Create_LU();
+	Element.rowtocolumn();
+	Element.columntorow();
 	
 	}
 	

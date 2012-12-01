@@ -45,7 +45,6 @@ public class Sub_Routines {
     double[] GB = new double[187];
     double[] BB = new double[187];
     double[] SB = new double[187];
-    
 
     int[] Cindx = new int[492];//no of branches considered for size 
     int ERP_Counter = 0;
@@ -354,7 +353,7 @@ System.out.println("END");
 				CindxCounter++;
 			}
 		}
-					System.out.println(Fillins);
+			//		System.out.println(Fillins);
 
 		//	        	System.out.println("Pos");
 		//	        	for(int q=0;q<13;q++)
@@ -378,5 +377,102 @@ System.out.println("END");
 	}
 
 
+	public void rowtocolumn()
+	{
+		int tposition = 0;
+		nxtcolptr = new int[ERP.length];
+		int[] t_nxcolpt = new int[ERP.length];
+		RindxU= new int[CindxU.length];
+		
+
+		//Counting the no of elements in a row
+
+		for (int i = 1; (i < CindxU.length - 1); i++)
+		{
+			if (CindxU[i] == 0)
+				break;
+			tposition = CindxU[i];
+			t_nxcolpt[tposition]++;
+
+		}
+		//Performing a running sum on the next column pointer 
+		nxtcolptr[1] = 1;
+
+		for (int i = 2; i < ERP.length; i++)
+		{
+			nxtcolptr[i] = nxtcolptr[i - 1] + t_nxcolpt[i - 1];
+			//System.out.println(nxtcolptr[i] + " ");
+		}
+
+
+		int tstoreelement;
+		for (int i = 1; i < ERPU.length - 1; i++)
+		{
+			for (int j = ERPU[i - 1] + 1; j <= ERPU[i]; j++)
+			{
+				tstoreelement = nxtcolptr[CindxU[j]];
+				RindxU[tstoreelement] = i;
+				nxtcolptr[CindxU[j]]++;
+			}
+		}
+
+		for (int i = 1; i <nxtcolptr.length; i++)
+			ECPU[i] = nxtcolptr[i] - 1;
+
+		//		System.out.println("\n RindxU");
+		//		for(int q=0;q<RindxU.length;q++)
+		//			System.out.print("\t"+RindxU[q]);
+		//
+		//		System.out.println("\n ECPU");
+		//		for(int q=0;q<ECPU.length;q++)
+		//			System.out.print("\t"+ECPU[q]);
+	}
+
+	
+	public void columntorow()
+	{
+		int tposition = 0;
+		nxtrowptr = new int[ERP.length];
+		int[] t_nxtrowptr = new int[ERP.length];
+		
+		CindxU_Ordered = new int[CindxU.length];
+
+		//Counting the no of elements in a row
+		for (int i = 1; i < RindxU.length - 1; i++)
+		{
+			if (RindxU[i] == 0)
+				break;
+			tposition = RindxU[i];
+			t_nxtrowptr[tposition]++;
+		}
+
+		//Performing a running sum on the next row pointer 
+		nxtrowptr[1] = 1;
+		for (int i = 2; i < ERP.length; i++)
+			nxtrowptr[i] = nxtrowptr[i - 1] + t_nxtrowptr[i - 1];
+
+		int tstore;
+		for (int i = 1; i < ECPU.length - 1; i++)
+		{
+			for (int j = ECPU[i-1]+1; j <= ECPU[i]; j++)
+			{
+				tstore = nxtrowptr[RindxU[j]];
+				CindxU_Ordered[tstore] = i;
+				nxtrowptr[RindxU[j]]++;
+			}
+		}
+
+		for (int i = 1; i < nxtrowptr.length-1; i++)
+			ERPU[i] = nxtrowptr[i]-1;
+
+		//		System.out.println("\n CindxU Ordered");
+		//		for(int q=0;q<CindxU_Ordered.length;q++)
+		//			System.out.print("\t"+CindxU_Ordered[q]);
+		//
+				System.out.println("\n ERPU");
+		//		for(int q=0;q<ERPU.length;q++)
+		//			System.out.print("\t"+ERPU[q]);
+
+	}
 
 }

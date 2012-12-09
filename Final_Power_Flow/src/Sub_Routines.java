@@ -7,19 +7,25 @@ public class Sub_Routines {
 
 	int BusCount = 118;
 	int BranchCount = 186;
-
+	int Base=100;
 	// Initialize matrix Arrays required to perform Power Flow
 	int[] Bus_Number = new int[119];
 	int[] BusType = new int[119];
 	double[] V_Mag = new double[119];
 	double[] V_Ang = new double[119];
-	double[] P_load = new double[119];
-	double[] Q_load = new double[119];
-	double[] P_gen = new double[119];
+	//	double[] P_load = new double[119];
+	//	double[] Q_load = new double[119];
+	double[] P_load = { 0, 51, 20, 39, 30, 0, 52, 19, 0, 0, 0, 70, 47, 34, 14, 90, 25, 11, 60, 45, 18, 14, 10, 7, 0, 0, 0, 62, 17, 24, 0, 43, 59, 23, 59, 33, 31, 0, 0, 27, 20, 37, 37, 18, 16, 53, 28, 34, 20, 87, 17, 17, 18, 23, 113, 63, 84, 12, 12, 277, 78, 0, 77, 0, 0, 0, 39, 28, 0, 0, 66, 0, 0, 0, 68, 47, 68, 61, 71, 39, 130, 0, 54, 20, 11, 24, 21, 0, 48, 0, 78, 0, 65, 12, 30, 42, 38, 15, 34, 0, 37, 22, 5, 23, 38, 31, 43, 28, 2, 8, 39, 0, 25, 0, 8, 22, 0, 20, 33 };
+	double[] Q_load = { 0, 27, 9, 10, 12, 0, 22, 2, 0, 0, 0, 23, 10, 16, 1, 30, 10, 3, 34, 25, 3, 8, 5, 3, 0, 0, 0, 13, 7, 4, 0, 27, 23, 9, 26, 9, 17, 0, 0, 11, 23, 10, 23, 7, 8, 22, 10, 0, 11, 30, 4, 8, 5, 11, 32, 22, 18, 3, 3, 113, 3, 0, 14, 0, 0, 0, 18, 7, 0, 0, 20, 0, 0, 0, 27, 11, 36, 28, 26, 32, 26, 0, 27, 10, 7, 15, 10, 0, 10, 0, 42, 0, 10, 7, 16, 31, 15, 9, 8, 0, 18, 15, 3, 16, 25, 26, 16, 12, 1, 3, 30, 0, 13, 0, 3, 7, 0, 8, 15 };
+
+	//double[] P_gen = new double[119];
+
+	double[] P_gen = { 0, 0, 0, 0, -9, 0, 0, 0, -28, 0, 450, 0, 85, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -13, 220, 314, -9, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, -46, 0, -59, 0, 0, 0, 19, 0, 0, 204, 0, 0, 0, 0, 48, 0, 0, 0, 0, 155, 0, 160, 0, 0, 0, 391, 392, 0, 0, 5.164000e+002, 0, 0, -12, -6, 0, 0, 0, 0, 0, 0, 477, 0, 0, 0, 0, 0, 0, 4, 0, 607, -85, -10, 0, 0, 0, 0, 0, 0, 0, -42, 252, 0, 0, 40, 0, 0, 0, -22, 0, 0, 0, 36, -43, -6, 0, 0, -184, 0, 0 };
 	double[] Q_gen= new double[119];
 	double[] Vsh = new double[119];
-	double[] QgenMax = new double[119];
-	double[] QgenMin = new double[119];
+	double[] QgenMax = { 0,15 ,  0 ,  0 ,  300 ,  0 ,  50 ,  0 ,  300 ,  0 ,  200 ,  0 ,  120 ,  0 ,  0 ,  30 ,  0 ,  0 ,  50 ,  24 ,  0 ,  0 ,  0 ,  0 ,  300 ,  140 ,  1000 ,  300 ,  0 ,  0 ,  0 ,  300 ,  42 ,  0 ,  24 ,  0 ,  24 ,  0 ,  0 ,  0 ,  300 ,  0 ,  300 ,  0 ,  0 ,  0 ,  100 ,  0 ,  0 ,  210 ,  0 ,  0 ,  0 ,  0 ,  300 ,  23 ,  15 ,  0 ,  0 ,  180 ,  0 ,  300 ,  20 ,  0 ,  0 ,  200 ,  200 ,  0 ,  0 ,  300 ,  32 ,  0 ,  100 ,  100 ,  9 ,  0 ,  23 ,  70 ,  0 ,  0 ,  280 ,  0 ,  0 ,  0 ,  0 ,  23 ,  0 ,  1000 ,  0 ,  300 ,  300 ,  100 ,  9 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  100 ,  155 ,  0 ,  0 ,  40 ,  23 ,  23 ,  0 ,  200 ,  0 ,  0 ,  23 ,  1000 ,  1000 ,  200 ,  0 ,  0 ,  1000 ,  0 ,  0 };
+	double[] QgenMin = { 0,-5 ,  0 ,  0 ,  -300 ,  0 ,  -13 ,  0 ,  -300 ,  0 ,  -147 ,  0 ,  -35 ,  0 ,  0 ,  -10 ,  0 ,  0 ,  -16 ,  -8 ,  0 ,  0 ,  0 ,  0 ,  -300 ,  -47 ,  -1000 ,  -300 ,  0 ,  0 ,  0 ,  -300 ,  -14 ,  0 ,  -8 ,  0 ,  -8 ,  0 ,  0 ,  0 ,  -300 ,  0 ,  -300 ,  0 ,  0 ,  0 ,  -100 ,  0 ,  0 ,  -85 ,  0 ,  0 ,  0 ,  0 ,  -300 ,  -8 ,  -8 ,  0 ,  0 ,  -60 ,  0 ,  -100 ,  -20 ,  0 ,  0 ,  -67 ,  -67 ,  0 ,  0 ,  -300 ,  -10 ,  0 ,  -100 ,  -100 ,  -6 ,  0 ,  -8 ,  -20 ,  0 ,  0 ,  -165 ,  0 ,  0 ,  0 ,  0 ,  -8 ,  0 ,  -100 ,  0 ,  -210 ,  -300 ,  -100 ,  -3 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  -100 ,  -50 ,  0 ,  0 ,  -15 ,  -8 ,  -8 ,  0 ,  -200 ,  0 ,  0 ,  -8 ,  -100 ,  -100 ,  -100 ,  0 ,  0 ,  -1000 ,  0 ,  0 , };
+
 	double[] Gsh = new double[119];
 	double[] Bsh = { 0, 0, 0, 0, 0, -0.4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.14, 0, 0, -0.25, 0, 0, 0, 0, 0, 0, 0.1, 0.1, 0.1, 0, 0.15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.12, 0, 0, 0, 0, 0.2, 0, 0, 0.2, 0.1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.2, 0, 0.06, 0, 0, 0.06, 0, 0, 0, 0, 0, 0, 0, 0 };
 	double[] Gself = new double[119];
@@ -29,6 +35,7 @@ public class Sub_Routines {
 
 	// Branch Data - Obtain after file read and connect each other
 	// Use of raw elements only for test case
+
 	int[] From_Bus = { 0, 1, 1, 4, 3, 5, 6, 8, 8, 9, 4, 5, 11, 2, 3, 7, 11, 12, 13, 14, 12, 15, 16, 17, 18, 19, 15, 20, 21, 22, 23, 23, 26, 25, 27, 28, 30, 8, 26, 17, 29, 23, 31, 27, 15, 19, 35, 35, 33, 34, 34, 38, 37, 37, 30, 39, 40, 40, 41, 43, 34, 44, 45, 46, 46, 47, 42, 42, 45, 48, 49, 49, 51, 52, 53, 49, 49, 54, 54, 55, 56, 50, 56, 51, 54, 56, 56, 55, 59, 59, 60, 60, 61, 63, 63, 64, 38, 64, 49, 49, 62, 62, 65, 66, 65, 47, 49, 68, 69, 24, 70, 24, 71, 71, 70, 70, 69, 74, 76, 69, 75, 77, 78, 77, 77, 79, 68, 81, 77, 82, 83, 83, 84, 85, 86, 85, 85, 88, 89, 89, 90, 89, 89, 91, 92, 92, 93, 94, 80, 82, 94, 80, 80, 80, 92, 94, 95, 96, 98, 99, 100, 92, 101, 100, 100, 103, 103, 100, 104, 105, 105, 105, 106, 108, 103, 109, 110, 110, 17, 32, 32, 27, 114, 68, 12, 75, 76 };
 	int[] To_Bus = { 0, 2, 3, 5, 5, 6, 7, 9, 5, 10, 11, 11, 12, 12, 12, 12, 13, 14, 15, 15, 16, 17, 17, 18, 19, 20, 19, 21, 22, 23, 24, 25, 25, 27, 28, 29, 17, 30, 30, 31, 31, 32, 32, 32, 33, 34, 36, 37, 37, 36, 37, 37, 39, 40, 38, 40, 41, 42, 42, 44, 43, 45, 46, 47, 48, 49, 49, 49, 49, 49, 50, 51, 52, 53, 54, 54, 54, 55, 56, 56, 57, 57, 58, 58, 59, 59, 59, 59, 60, 61, 61, 62, 62, 59, 64, 61, 65, 65, 66, 66, 66, 67, 66, 67, 68, 69, 69, 69, 70, 70, 71, 72, 72, 73, 74, 75, 75, 75, 77, 77, 77, 78, 79, 80, 80, 80, 81, 80, 82, 83, 84, 85, 85, 86, 87, 88, 89, 89, 90, 90, 91, 92, 92, 92, 93, 94, 94, 95, 96, 96, 96, 97, 98, 99, 100, 100, 96, 97, 100, 100, 101, 102, 102, 103, 104, 104, 105, 106, 105, 106, 107, 108, 107, 109, 110, 110, 111, 112, 113, 113, 114, 115, 115, 116, 117, 118, 118 };
 	int[] BranchType = { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -42,11 +49,11 @@ public class Sub_Routines {
 	double[] Tp_Max = new double[186];
 	double[] Desired_Voltage = {0, 0.955000 ,  0.000000 ,  0.000000 ,  0.998000 ,  0.000000 ,  0.990000 ,  0.000000 ,  1.015000 ,  0.000000 ,  1.050000 ,  0.000000 ,  0.990000 ,  0.000000 ,  0.000000 ,  0.970000 ,  0.000000 ,  0.000000 ,  0.973000 ,  0.962000 ,  0.000000 ,  0.000000 ,  0.000000 ,  0.000000 ,  0.992000 ,  1.050000 ,  1.015000 ,  0.968000 ,  0.000000 ,  0.000000 ,  0.000000 ,  0.967000 ,  0.963000 ,  0.000000 ,  0.984000 ,  0.000000 ,  0.980000 ,  0.000000 ,  0.000000 ,  0.000000 ,  0.970000 ,  0.000000 ,  0.985000 ,  0.000000 ,  0.000000 ,  0.000000 ,  1.005000 ,  0.000000 ,  0.000000 ,  1.025000 ,  0.000000 ,  0.000000 ,  0.000000 ,  0.000000 ,  0.955000 ,  0.952000 ,  0.954000 ,  0.000000 ,  0.000000 ,  0.985000 ,  0.000000 ,  0.995000 ,  0.998000 ,  0.000000 ,  0.000000 ,  1.005000 ,  1.050000 ,  0.000000 ,  0.000000 ,  1.035000 ,  0.984000 ,  0.000000 ,  0.980000 ,  0.991000 ,  0.958000 ,  0.000000 ,  0.943000 ,  1.006000 ,  0.000000 ,  0.000000 ,  1.040000 ,  0.000000 ,  0.000000 ,  0.000000 ,  0.000000 ,  0.985000 ,  0.000000 ,  1.015000 ,  0.000000 ,  1.005000 ,  0.985000 ,  0.980000 ,  0.990000 ,  0.000000 ,  0.000000 ,  0.000000 ,  0.000000 ,  0.000000 ,  0.000000 ,  1.010000 ,  1.017000 ,  0.000000 ,  0.000000 ,  1.010000 ,  0.971000 ,  0.965000 ,  0.000000 ,  0.952000 ,  0.000000 ,  0.000000 ,  0.973000 ,  0.980000 ,  0.975000 ,  0.993000 ,  0.000000 ,  0.000000 ,  1.005000 ,  0.000000 ,  0.000000 };
 	int[] Bus_Type={0, 2 ,  0 ,  0 ,  2 ,  0 ,  2 ,  0 ,  2 ,  0 ,  2 ,  0 ,  2 ,  0 ,  0 ,  2 ,  0 ,  0 ,  2 ,  2 ,  0 ,  0 ,  0 ,  0 ,  2 ,  2 ,  2 ,  2 ,  0 ,  0 ,  0 ,  2 ,  2 ,  0 ,  2 ,  0 ,  2 ,  0 ,  0 ,  0 ,  2 ,  0 ,  2 ,  0 ,  0 ,  0 ,  2 ,  0 ,  0 ,  2 ,  0 ,  0 ,  0 ,  0 ,  2 ,  2 ,  2 ,  0 ,  0 ,  2 ,  0 ,  2 ,  2 ,  0 ,  0 ,  2 ,  2 ,  0 ,  0 ,  3 ,  2 ,  0 ,  2 ,  2 ,  2 ,  0 ,  2 ,  2 ,  0 ,  0 ,  2 ,  0 ,  0 ,  0 ,  0 ,  2 ,  0 ,  2 ,  0 ,  2 ,  2 ,  2 ,  2 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  2 ,  2 ,  0 ,  0 ,  2 ,  2 ,  2 ,  0 ,  2 ,  0 ,  0 ,  2 ,  2 ,  2 ,  2 ,  0 ,  0 ,  2 ,  0 ,  0 , };
-	float[] Q_Max_Var={0, 15 ,  0 ,  0 ,  300 ,  0 ,  50 ,  0 ,  300 ,  0 ,  200 ,  0 ,  120 ,  0 ,  0 ,  30 ,  0 ,  0 ,  50 ,  24 ,  0 ,  0 ,  0 ,  0 ,  300 ,  140 ,  1000 ,  300 ,  0 ,  0 ,  0 ,  300 ,  42 ,  0 ,  24 ,  0 ,  24 ,  0 ,  0 ,  0 ,  300 ,  0 ,  300 ,  0 ,  0 ,  0 ,  100 ,  0 ,  0 ,  210 ,  0 ,  0 ,  0 ,  0 ,  300 ,  23 ,  15 ,  0 ,  0 ,  180 ,  0 ,  300 ,  20 ,  0 ,  0 ,  200 ,  200 ,  0 ,  0 ,  300 ,  32 ,  0 ,  100 ,  100 ,  9 ,  0 ,  23 ,  70 ,  0 ,  0 ,  280 ,  0 ,  0 ,  0 ,  0 ,  23 ,  0 ,  1000 ,  0 ,  300 ,  300 ,  100 ,  9 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  100 ,  155 ,  0 ,  0 ,  40 ,  23 ,  23 ,  0 ,  200 ,  0 ,  0 ,  23 ,  1000 ,  1000 ,  200 ,  0 ,  0 ,  1000 ,  0 ,  0 , };
-	float[] Q_Min_Var ={0, -5 ,  0 ,  0 ,  -300 ,  0 ,  -13 ,  0 ,  -300 ,  0 ,  -147 ,  0 ,  -35 ,  0 ,  0 ,  -10 ,  0 ,  0 ,  -16 ,  -8 ,  0 ,  0 ,  0 ,  0 ,  -300 ,  -47 ,  -1000 ,  -300 ,  0 ,  0 ,  0 ,  -300 ,  -14 ,  0 ,  -8 ,  0 ,  -8 ,  0 ,  0 ,  0 ,  -300 ,  0 ,  -300 ,  0 ,  0 ,  0 ,  -100 ,  0 ,  0 ,  -85 ,  0 ,  0 ,  0 ,  0 ,  -300 ,  -8 ,  -8 ,  0 ,  0 ,  -60 ,  0 ,  -100 ,  -20 ,  0 ,  0 ,  -67 ,  -67 ,  0 ,  0 ,  -300 ,  -10 ,  0 ,  -100 ,  -100 ,  -6 ,  0 ,  -8 ,  -20 ,  0 ,  0 ,  -165 ,  0 ,  0 ,  0 ,  0 ,  -8 ,  0 ,  -100 ,  0 ,  -210 ,  -300 ,  -100 ,  -3 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  -100 ,  -50 ,  0 ,  0 ,  -15 ,  -8 ,  -8 ,  0 ,  -200 ,  0 ,  0 ,  -8 ,  -100 ,  -100 ,  -100 ,  0 ,  0 ,  -1000 ,  0 ,  0 , };
+	float[] Q_Max_Var={0, 15 ,  0 ,  0 ,  300 ,  0 ,  50 ,  0 ,  300 ,  0 ,  200 ,  0 ,  120 ,  0 ,  0 ,  30 ,  0 ,  0 ,  50 ,  24 ,  0 ,  0 ,  0 ,  0 ,  300 ,  140 ,  1000 ,  300 ,  0 ,  0 ,  0 ,  300 ,  42 ,  0 ,  24 ,  0 ,  24 ,  0 ,  0 ,  0 ,  300 ,  0 ,  300 ,  0 ,  0 ,  0 ,  100 ,  0 ,  0 ,  210 ,  0 ,  0 ,  0 ,  0 ,  300 ,  23 ,  15 ,  0 ,  0 ,  180 ,  0 ,  300 ,  20 ,  0 ,  0 ,  200 ,  200 ,  0 ,  0 ,  300 ,  32 ,  0 ,  100 ,  100 ,  9 ,  0 ,  23 ,  70 ,  0 ,  0 ,  280 ,  0 ,  0 ,  0 ,  0 ,  23 ,  0 ,  1000 ,  0 ,  300 ,  300 ,  100 ,  9 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  100 ,  155 ,  0 ,  0 ,  40 ,  23 ,  23 ,  0 ,  200 ,  0 ,  0 ,  23 ,  1000 ,  1000 ,  200 ,  0 ,  0 ,  1000 ,  0 ,  0 };
+	float[] Q_Min_Var ={0, -5 ,  0 ,  0 ,  -300 ,  0 ,  -13 ,  0 ,  -300 ,  0 ,  -147 ,  0 ,  -35 ,  0 ,  0 ,  -10 ,  0 ,  0 ,  -16 ,  -8 ,  0 ,  0 ,  0 ,  0 ,  -300 ,  -47 ,  -1000 ,  -300 ,  0 ,  0 ,  0 ,  -300 ,  -14 ,  0 ,  -8 ,  0 ,  -8 ,  0 ,  0 ,  0 ,  -300 ,  0 ,  -300 ,  0 ,  0 ,  0 ,  -100 ,  0 ,  0 ,  -85 ,  0 ,  0 ,  0 ,  0 ,  -300 ,  -8 ,  -8 ,  0 ,  0 ,  -60 ,  0 ,  -100 ,  -20 ,  0 ,  0 ,  -67 ,  -67 ,  0 ,  0 ,  -300 ,  -10 ,  0 ,  -100 ,  -100 ,  -6 ,  0 ,  -8 ,  -20 ,  0 ,  0 ,  -165 ,  0 ,  0 ,  0 ,  0 ,  -8 ,  0 ,  -100 ,  0 ,  -210 ,  -300 ,  -100 ,  -3 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  -100 ,  -50 ,  0 ,  0 ,  -15 ,  -8 ,  -8 ,  0 ,  -200 ,  0 ,  0 ,  -8 ,  -100 ,  -100 ,  -100 ,  0 ,  0 ,  -1000 ,  0 ,  0 };
 
 	int b_l = Bsh.length;
-	double tolerence= .0000001;
+	double tolerence= 10E-4;
 	//int[] N_Row_ele = new int[119];
 
 	int[] ERP = new int[119];
@@ -62,6 +69,11 @@ public class Sub_Routines {
 	double[] Y_Mat_G = new double[477];// size justification = 2*(no of branches) + 118-> (diagonal elements)
 
 	double[] Y_Mat_B = new double[477];// ****Change Y_Mat_G, B
+	double[] G_ik = new double[187];
+	double[] B_ik = new double[187];
+	double[] G_ki = new double[187];
+	double[] B_ki = new double[187];
+
 
 	/*
 	 * Variables for Performing LU Factorization , Copied frm Midterm 
@@ -99,12 +111,6 @@ public class Sub_Routines {
 	int[] nxtcolptr;// Next Column Pointer array used in ordering 
 	int[] nxtrowptr;// Next row pointer array used in ordering
 
-	int[] ICPL;
-	double[]ExAccum;
-	double[] URO;
-	double[] LCO;
-	double[] Diagonal;
-
 	int ERPUCounter = 1;
 	int Rindx=0;
 	int nextlink;
@@ -116,9 +122,59 @@ public class Sub_Routines {
 	//	double[] XX_Tinney;
 	//	double[] ZZ_Tinney;
 	int[] LRO;
-
 	int[] Matrix_size;
 
+	//Variables for Bus Switching
+
+	int [] Bus_Type_Switch;
+	float[] Q_max_Bus;
+	float[] Q_min_Bus;
+	int bus_switch;
+
+	// Variables for Mismatch Calculation
+
+	double Max_P_Mismatch,Max_Q_Mismatch;
+
+	double[] P_Mismatch;
+	double[] Q_Mismatch;
+
+	//Variables of Jacobian
+
+	double[] H;
+	double[] J;
+	double[] N;
+	double[] L;
+
+	//Factorize Jacobian Variables
+	int[] Lu_Link;
+	int[] ICPL;
+	double[] ExAccum_H;
+	double[] ExAccum_J;
+	double[] ExAccum_N;
+	double[] ExAccum_L;
+	double[] URO_H;
+	double[] URO_J;
+	double[] URO_N;
+	double[] URO_L ;
+	double[] LCO_H;
+	double[] LCO_J;
+	double[] LCO_N;
+	double[] LCO_L;
+	double[] Diag_H;
+	double[] Diag_J;
+	double[] Diag_N;
+	double[] Diag_L;
+
+	// Forward Backward Variables
+
+	double[] delta_V_Ang;
+	double[] delta_V_Mag ;
+	int solve_variable = 0;
+	// Line flow 
+	double[] P_ik;
+	double[] Q_ik;
+	double[] P_ki;
+	double[] Q_ki;
 
 	public void Data_Extract()
 	{
@@ -130,6 +186,15 @@ public class Sub_Routines {
 
 		//****** make sure that data extractiona and Y bus formulation are separate routines.********
 
+		for (int i = 1; i <= 118; i++)
+		{
+			P_load[i] = P_load[i] / Base;
+			P_gen[i] = P_gen[i] / Base;
+			Q_gen[i] = Q_gen[i] / Base;
+			Q_load[i] = Q_load[i] / Base;
+			QgenMax[i] = QgenMax[i] / Base;
+			QgenMin[i] = QgenMin[i] / Base;
+		}
 
 
 		// Self conductance and self susceptance calculated from Bus data calculated at 1 MVA base
@@ -175,6 +240,7 @@ public class Sub_Routines {
 		for (int i = 1; i <= BusCount; i++)
 		{
 			Mat_Counter++;
+			//	System.out.println(Mat_Counter);
 			//update Diagonal element, Cindx for diag ele
 			Y_Mat_G[Mat_Counter] = Gself[i];
 			Y_Mat_B[Mat_Counter] = Bself[i];
@@ -259,7 +325,7 @@ public class Sub_Routines {
 		int k=0;
 		tCindxU.add(0); 
 
-		for(int j=1;j<ERP.length-1;j++)
+		for(int j=1;j<ERP.length;j++)
 		{
 			MinNode=100000;
 			erpold=ERP[j-1]+1;
@@ -343,7 +409,6 @@ public class Sub_Routines {
 			}
 
 			tlink=MinNode;
-
 			if(MinNode != 100000){
 				while((nextlink=Link[tlink])!=0)
 				{
@@ -369,7 +434,7 @@ public class Sub_Routines {
 				CindxCounter++;
 			}
 		}
-		//		System.out.println(Fillins);
+		System.out.println(Fillins);
 
 		//	        	System.out.println("Pos");
 		//	        	for(int q=0;q<13;q++)
@@ -387,7 +452,7 @@ public class Sub_Routines {
 		//	        	for(int q=0;q<Switch.length;q++)
 		//	        		System.out.print("\t"+Switch[q]);
 		//	        	
-		System.out.println("\n Link");
+		//				System.out.println("\n Link");
 		//	        	for(int q=0;q<Link.length;q++)
 		//	        		System.out.print("\t"+Link[q]);
 	}
@@ -402,7 +467,7 @@ public class Sub_Routines {
 
 		//Counting the no of elements in a row
 
-		for (int i = 1; (i < CindxU.length - 1); i++)
+		for (int i = 1; (i < CindxU.length-1); i++)
 		{
 			if (CindxU[i] == 0)
 				break;
@@ -438,7 +503,7 @@ public class Sub_Routines {
 		//		for(int q=0;q<RindxU.length;q++)
 		//			System.out.print("\t"+RindxU[q]);
 		//
-		//		System.out.println("\n ECPU");
+		System.out.println("\n ECPU");
 		//		for(int q=0;q<ECPU.length;q++)
 		//			System.out.print("\t"+ECPU[q]);
 	}
@@ -479,19 +544,19 @@ public class Sub_Routines {
 		for (int i = 1; i < nxtrowptr.length-1; i++)
 			ERPU[i] = nxtrowptr[i]-1;
 
-		System.out.println("\n CindxU Ordered");
-		for(int q=0;q<CindxU_Ordered.length;q++)
-			System.out.print("\t"+CindxU_Ordered[q]);
-
-		System.out.println("\n ERPU");
-		for(int q=0;q<ERPU.length;q++)
-			System.out.print("\t"+ERPU[q]);
+		//		System.out.println("\n CindxU Ordered");
+		//		for(int q=0;q<CindxU_Ordered.length;q++)
+		//			System.out.print("\t"+CindxU_Ordered[q]);
+		//
+		//		System.out.println("\n ERPU");
+		//		for(int q=0;q<ERPU.length;q++)
+		//			System.out.print("\t"+ERPU[q]);
 
 	}
 
 	public void initialize_voltage()
 	{
-		for (int i =1; i<=BusCount; i++)
+		for(int i =1; i<=BusCount; i++)
 		{
 			if (Bus_Type[i]==2)
 				V_Mag[i]=Desired_Voltage[i];
@@ -544,33 +609,63 @@ public class Sub_Routines {
 
 	public void power_mismatch()
 	{
+		Max_P_Mismatch = 0;
+		Max_Q_Mismatch = 0;
 
+		P_Mismatch = new double[BusCount + 1];
+		Q_Mismatch = new double[BusCount + 1];
 
+		for (int i = 1; i <= BusCount;i++)
+		{
+			P_Mismatch[i] = P_gen[i] - P_load[i] - P_Calc[i];
+			Q_Mismatch[i] = Q_gen[i] - Q_load[i] - Q_Calc[i];
+
+			if (Bus_Type[i] == 2)
+			{
+				Q_Mismatch[i] = 0;
+
+			}
+			else if (Bus_Type[i] == 3)
+			{
+				P_Mismatch[i] = 0;
+				Q_Mismatch[i] = 0;
+
+			}
+			else
+			{
+				if (Math.abs(P_Mismatch[i]) > Max_P_Mismatch)
+					Max_P_Mismatch = Math.abs(P_Mismatch[i]);
+				if (Math.abs(Q_Mismatch[i]) > Max_Q_Mismatch)
+					Max_Q_Mismatch = Math.abs(Q_Mismatch[i]);
+
+			}
+		}
+		System.out.println();
 	}
 
 	public void Tinney_Ordering()
 	{
 		int temp,temp1,temp2;
-		
-		int r;
-    
-        
-        double[] tinney_G = new double[492];
-        double[] tinney_B = new double[492];
-        int[] tinney_BusType = new int[119];
-        double[] tinney_Vmag = new double[119];
-        double[] tinney_Vang = new double[119];
-        double[] tinney_P_load = new double[119];
-        double[] tinney_Q_load = new double[119];
-        double[] tinney_Pgen = new double[119];
-        double[] tinney_Qgen = new double[119];
-        double[] tinney_Desired_Voltage = new double[119];
-        double[] tinney_Qgen_Max = new double[119];
-        double[] tinney_Qgen_Min = new double[119];
-        
 
-        // Initialising the Column index , Valency , BusOrder, NewErp and A arrays with appropriate lengths.
-        int[] tinney_Cindx = new int[477];
+		int r;
+
+
+		double[] tinney_G = new double[492];
+		double[] tinney_B = new double[492];
+		int[] tinney_BusType = new int[119];
+		double[] tinney_Vmag = new double[119];
+		double[] tinney_Vang = new double[119];
+		double[] tinney_P_load = new double[119];
+		double[] tinney_Q_load = new double[119];
+		double[] tinney_Pgen = new double[119];
+		double[] tinney_Qgen = new double[119];
+		double[] tinney_Desired_Voltage = new double[119];
+		double[] tinney_Qgen_Max = new double[119];
+		double[] tinney_Qgen_Min = new double[119];
+
+
+		// Initialising the Column index , Valency , BusOrder, NewErp and A arrays with appropriate lengths.
+		int[] tinney_Cindx = new int[477];
 		int[] valency= new int[ERP.length];
 		Matrix_size= new int[ERP.length];
 
@@ -578,7 +673,7 @@ public class Sub_Routines {
 		for(int i=1; i<=BusCount;i++)
 		{
 			temp=0;
-			
+
 			for(int j=ERP[i-1]+1;j<=ERP[i];j++)
 			{
 				if(i!=Cindx[j])
@@ -595,7 +690,7 @@ public class Sub_Routines {
 		 * Ordering the Buses according to valency
 		 * 
 		 */
-		
+
 		for(int i=1;i<=BusCount;i++)
 		{
 			for(int j=1;j<BusCount;j++)
@@ -614,11 +709,11 @@ public class Sub_Routines {
 			}
 		}
 
-		
-		
+
+
 		int tinney_erp[] = new int[ERP.length];
 
-		
+
 		tinney_erp[1]=1;
 
 		int k=1,t=0;
@@ -634,9 +729,9 @@ public class Sub_Routines {
 				if(p==v1)
 				{
 					tinney_G[k] = Y_Mat_G[j];
-                    tinney_B[k] = Y_Mat_B[j];
-                    tinney_Cindx[k]=i;
-                    
+					tinney_B[k] = Y_Mat_B[j];
+					tinney_Cindx[k]=i;
+
 					k=k+1;
 					t=t+1;
 				}
@@ -646,10 +741,10 @@ public class Sub_Routines {
 					{
 						if(Matrix_size[m]==p)
 						{
-                            tinney_G[k] = Y_Mat_G[j];
-                            tinney_B[k] = Y_Mat_B[j];
-                            r = m;
-                            tinney_Cindx[k] = r;
+							tinney_G[k] = Y_Mat_G[j];
+							tinney_B[k] = Y_Mat_B[j];
+							r = m;
+							tinney_Cindx[k] = r;
 							k=k+1;
 							t=t+1;
 							break;
@@ -662,21 +757,21 @@ public class Sub_Routines {
 		}
 
 		//copying all elements in a temporary variable in terms of bus order
-        for (int i = 1; i <= BusCount; i++)
-        {
-            tinney_BusType[i] = Bus_Type[Matrix_size[i]];
-            tinney_Vmag[i] = V_Mag[Matrix_size[i]];
-            tinney_Vang[i] = V_Ang[Matrix_size[i]];
-            tinney_P_load[i] = P_load[Matrix_size[i]];
-            tinney_Q_load[i] = Q_load[Matrix_size[i]];
-            tinney_Pgen[i] = P_gen[Matrix_size[i]];
-            tinney_Qgen[i] = Q_gen[Matrix_size[i]];
-            tinney_Desired_Voltage[i] = Desired_Voltage[Matrix_size[i]];
-            tinney_Qgen_Max[i] = QgenMax[Matrix_size[i]];
-            tinney_Qgen_Min[i] = QgenMin[Matrix_size[i]];
-        }
+		for (int i = 1; i <= BusCount; i++)
+		{
+			tinney_BusType[i] = Bus_Type[Matrix_size[i]];
+			tinney_Vmag[i] = V_Mag[Matrix_size[i]];
+			tinney_Vang[i] = V_Ang[Matrix_size[i]];
+			tinney_P_load[i] = P_load[Matrix_size[i]];
+			tinney_Q_load[i] = Q_load[Matrix_size[i]];
+			tinney_Pgen[i] = P_gen[Matrix_size[i]];
+			tinney_Qgen[i] = Q_gen[Matrix_size[i]];
+			tinney_Desired_Voltage[i] = Desired_Voltage[Matrix_size[i]];
+			tinney_Qgen_Max[i] = QgenMax[Matrix_size[i]];
+			tinney_Qgen_Min[i] = QgenMin[Matrix_size[i]];
+		}
 
-		
+
 		for(int i=1;i<ERP.length;i++)
 			ERP[i]=tinney_erp[i];
 
@@ -686,25 +781,538 @@ public class Sub_Routines {
 		for(int l=1;l<Y_Mat_G.length;l++)
 		{
 			Y_Mat_G[l]=tinney_G[l];
-            Y_Mat_B[l] =tinney_B[l];
+			Y_Mat_B[l] =tinney_B[l];
 		}
-		
+
 		// copying back elements
-        for (int i = 1; i <= BusCount; i++)
-        {
-            Bus_Type[i] = tinney_BusType[i];
-            V_Mag[i] = tinney_Vmag[i];
-            V_Ang[i] = tinney_Vang[i];
-            P_load[i] = tinney_P_load[i];
-            Q_load[i] = tinney_Q_load[i];
-            P_gen[i] = tinney_Pgen[i];
-            Q_gen[i] = tinney_Qgen[i];
-            Desired_Voltage[i] = tinney_Desired_Voltage[i];
-            QgenMax[i] = tinney_Qgen_Max[i];
-            QgenMin[i] = tinney_Qgen_Min[i];
-        }
-		
+		for (int i = 1; i <= BusCount; i++)
+		{
+			Bus_Type[i] = tinney_BusType[i];
+			V_Mag[i] = tinney_Vmag[i];
+			V_Ang[i] = tinney_Vang[i];
+			P_load[i] = tinney_P_load[i];
+			Q_load[i] = tinney_Q_load[i];
+			P_gen[i] = tinney_Pgen[i];
+			Q_gen[i] = tinney_Qgen[i];
+			Desired_Voltage[i] = tinney_Desired_Voltage[i];
+			QgenMax[i] = tinney_Qgen_Max[i];
+			QgenMin[i] = tinney_Qgen_Min[i];
+		}
+
 		System.out.println();
 	}
 
+	int bus_switch()
+	{
+		int i = 0;
+		int k = 0;
+		int z = 0;// Change variables name
+
+		Bus_Type_Switch = new int[BusCount + 1];
+		Q_max_Bus = new float[BusCount + 1];
+		Q_min_Bus = new float[BusCount + 1];
+
+
+		for (i = 1; i <= BusCount; i++)
+		{
+			if (Bus_Type[i] == 2)
+			{
+				if (QgenMax[i] < (Q_load[i] + Q_Calc[i]))
+				{
+					bus_switch = 1;
+					Bus_Type[i] = 5;
+					Q_gen[i] = QgenMax[i];
+					Q_max_Bus[k++] = i;
+				}
+				if (QgenMin[i] > (Q_load[i] + Q_Calc[i]))
+				{
+					bus_switch = 1;
+					Bus_Type[i] = 4;
+					Q_gen[i] = QgenMin[i];
+					Q_min_Bus[z++] = i;
+				}
+					
+				if (Bus_Type[i] == 4)
+				{
+					if (V_Mag[i] < Desired_Voltage[i])
+					{
+						bus_switch = 2;
+						V_Mag[i] = Desired_Voltage[i];
+						Bus_Type[i] = 2;
+
+					}
+				}
+				if (Bus_Type[i] == 5)
+				{
+					if (V_Mag[i] > Desired_Voltage[i])
+					{
+						bus_switch = 2;
+						V_Mag[i] = Desired_Voltage[i];
+						Bus_Type[i] = 2;
+					}
+				}
+
+			}
+		}
+
+
+		return bus_switch;
+
+	}
+
+	void create_jacobian()
+	{
+
+		H = new double[477];
+		J = new double[477];
+		N = new double[477];
+		L = new double[477];
+		int k = 0;
+
+		for (int i = 1; i <= BusCount; i++)
+		{
+			for (int j = ERP[i - 1] + 1; j <= ERP[i]; j++)
+			{
+				k = Cindx[j];
+				if (i != k)
+				{
+					H[j] = V_Mag[i] * V_Mag[k] * (Y_Mat_G[j] * (Math.sin(V_Ang[i] - V_Ang[k])) - Y_Mat_B[j] * (Math.cos(V_Ang[i] - V_Ang[k])));
+					J[j] = -V_Mag[i] * V_Mag[k] * (Y_Mat_G[j] * (Math.cos(V_Ang[i] - V_Ang[k])) + Y_Mat_B[j] * (Math.sin(V_Ang[i] - V_Ang[k])));
+					N[j] = V_Mag[i] * (Y_Mat_G[j] * (Math.cos(V_Ang[i] - V_Ang[k])) + Y_Mat_B[j] * (Math.sin(V_Ang[i] - V_Ang[k])));
+					L[j] = V_Mag[i] * (Y_Mat_G[j] * (Math.sin(V_Ang[i] - V_Ang[k])) - Y_Mat_B[j] * (Math.cos(V_Ang[i] - V_Ang[k])));
+
+					// Case : slack bus
+					if (Bus_Type[i] == 3)
+						H[j] = J[j] = N[j] = L[j] = 0;
+
+					if (Bus_Type[i] == 2)
+						J[j] = L[j] = 0;
+
+				}
+
+				//diagonal elements
+				else 
+				{
+
+					H[j] = -Q_Calc[i] - (V_Mag[i] * V_Mag[i]) * Y_Mat_B[j];
+					J[j] = P_Calc[i] - (V_Mag[i] * V_Mag[i]) * Y_Mat_G[j];
+					N[j] = (P_Calc[i] / V_Mag[i]) + (V_Mag[i] * Y_Mat_G[j]);
+					L[j] = (Q_Calc[i] / V_Mag[i]) - (V_Mag[i] * Y_Mat_B[j]);
+
+					// Calculate H,J,N,L for slack bus
+					if (Bus_Type[i] == 3)
+					{
+						H[j] = L[j] = 1;
+						J[j] = N[j] = 0;
+					}
+
+					//Calc H,J,N,L for PV bus 
+					if (Bus_Type[i] == 2)
+					{
+						J[j] = 0;
+						L[j] = 1;
+					}
+
+				}
+			}
+		}
+
+	}
+
+	void Factorize_jacobian()
+	{
+		// Initializing ERPU index counter and link buffer tlink 
+		int ERPU_Shift_Index = 0;
+		int tlink = 0;
+
+		// Initializing Lu_Link, ICPL, ExAccum, URO, LCO, Diag arrays to perform the numerical
+		// section of LU factorization.
+		Lu_Link = new int[BusCount + 1];
+		ICPL = new int[BusCount];
+		ExAccum_H = new double[BusCount + 1];
+		ExAccum_J = new double[BusCount + 1];
+		ExAccum_N = new double[BusCount + 1];
+		ExAccum_L = new double[BusCount + 1];
+		URO_H = new double[CindxU.length];
+		URO_J = new double[CindxU.length];
+		URO_N = new double[CindxU.length];
+		URO_L = new double[CindxU.length];
+		LCO_H = new double[CindxU.length];
+		LCO_J = new double[CindxU.length];
+		LCO_N = new double[CindxU.length];
+		LCO_L = new double[CindxU.length];
+		Diag_H = new double[BusCount + 1];
+		Diag_J = new double[BusCount + 1];
+		Diag_N = new double[BusCount + 1];
+		Diag_L = new double[BusCount + 1];
+		int Rindx = 0;
+		double Diag_buf = 0;
+		//int RX_l = 0;
+		//Initializing ICPL using ERPU to point to beginning of all columns in array for the lower triangular matrix.
+		for (int i = 1; i <BusCount; i++)
+		{
+			ERPU_Shift_Index = ERPU[i - 1];
+			ICPL[i] = ERPU_Shift_Index + 1;
+		}
+
+		int URO_Counter = 1;
+
+		// Performing the Numerical factorization
+		for (Rindx = 1; Rindx <= BusCount; Rindx++) // loop for counting rows
+		{
+			if (Rindx < BusCount)
+			{
+				for (int j = ERPU[Rindx - 1] + 1; j <= ERPU[Rindx]; j++)
+				{
+					//Initializing ExAccum using CindxU ordered.
+					//This initialisation is performed for all rows except last row.
+					ExAccum_H[CindxU_Ordered[j]] = 0;
+					ExAccum_J[CindxU_Ordered[j]] = 0;
+					ExAccum_N[CindxU_Ordered[j]] = 0;
+					ExAccum_L[CindxU_Ordered[j]] = 0;
+				}
+			}
+
+			//Initializing ExAccum to 0 using link_1 array 
+			//this initialization is performed for all rows.
+			int node = Rindx, templink;
+			while ((templink = Lu_Link[node]) != 0)
+			{
+				ExAccum_H[templink] = 0;
+				ExAccum_J[templink] = 0;
+				ExAccum_N[templink] = 0;
+				ExAccum_L[templink] = 0;
+				node = templink;
+			}
+
+			// Copying the matrix elements in the ExAccum from MatrixElements using ERP.
+			for (int j = ERP[Rindx - 1] + 1; j <= ERP[Rindx]; j++)
+			{
+				ExAccum_H[Cindx[j]] = H[j];
+				ExAccum_J[Cindx[j]] = J[j];
+				ExAccum_N[Cindx[j]] = N[j];
+				ExAccum_L[Cindx[j]] = L[j];
+			}
+			double multiplier_H = 0;
+			double multiplier_N = 0;
+			double multiplier_J = 0;
+			double multiplier_L = 0;
+
+			List<Integer> Node_rx = new ArrayList<Integer>();
+			int rx1;
+			tlink = Rindx;
+			// the following while loop section initializes Link_LU array to zero using Rindx
+			while ((Lu_Link[Rindx]) != 0)
+			{
+
+				while (true)
+				{
+					if ((rx1 = Lu_Link[tlink]) != 0)
+					{
+						Lu_Link[tlink] = 0;
+						Node_rx.add(rx1);
+						tlink = rx1;
+					}
+					else
+						break;
+				}
+
+				int rxlink = 0, nextnod;
+
+				if(Rindx == 118)
+					System.out.println();
+				// Updating ExAccum using URO and ERPU
+				//foreach (int rx in Node_rx)
+				//sint rx = 0;
+				for (Integer rx:Node_rx)
+				{
+
+					multiplier_H = ExAccum_H[rx];
+					multiplier_N = ExAccum_N[rx];
+					multiplier_J = ExAccum_J[rx];
+					multiplier_L = ExAccum_L[rx];
+
+					for (int z = ERPU[rx - 1] + 1; z <= ERPU[rx]; z++)
+					{
+						ExAccum_H[CindxU_Ordered[z]] = ExAccum_H[CindxU_Ordered[z]] - multiplier_H * URO_H[z] - multiplier_N * URO_J[z];
+						ExAccum_J[CindxU_Ordered[z]] = ExAccum_J[CindxU_Ordered[z]] - multiplier_J * URO_H[z] - multiplier_L * URO_J[z];
+						ExAccum_N[CindxU_Ordered[z]] = ExAccum_N[CindxU_Ordered[z]] - multiplier_H * URO_N[z] - multiplier_N * URO_L[z];
+						ExAccum_L[CindxU_Ordered[z]] = ExAccum_L[CindxU_Ordered[z]] - multiplier_J * URO_N[z] - multiplier_L * URO_L[z];
+
+					}
+
+					// Initializing LCO using ExAccum and diagonal
+					//if (ICPL[rx] < ColInd)
+
+					LCO_H[ICPL[rx]] = ExAccum_H[rx] * Diag_H[rx] + ExAccum_N[rx] * Diag_J[rx];
+					LCO_N[ICPL[rx]] = ExAccum_H[rx] * Diag_N[rx] + ExAccum_N[rx] * Diag_L[rx];
+					LCO_J[ICPL[rx]] = ExAccum_J[rx] * Diag_H[rx] + ExAccum_L[rx] * Diag_J[rx];
+					LCO_L[ICPL[rx]] = ExAccum_J[rx] * Diag_N[rx] + ExAccum_L[rx] * Diag_L[rx];
+
+					ICPL[rx]++;
+
+
+					// Initializing Link_Lu array to zero using rx
+					if (ICPL[rx] < CindxU_Ordered.length)
+						rxlink = CindxU_Ordered[ICPL[rx]];
+
+
+					if (ICPL[rx] <= ERPU[rx])
+					{ // traversing the link array till it finds the Lu_Link[] =0
+						while ((nextnod = Lu_Link[rxlink]) != 0)
+						{
+							rxlink = Lu_Link[nextnod];
+							if (rxlink == 0)
+							{
+								rxlink = nextnod;
+								break;
+							}
+						}
+						// updating the above position in the Lu_Link with rx
+						Lu_Link[rxlink] = rx;
+					}
+				}
+			}
+			// Updating Diag array by storing the inverse of the diagonal elements in the accumulator 
+			//Diag[Rindx] = 1 / ExAccum[Rindx];
+			double Deno_temp;
+
+			Deno_temp = (ExAccum_H[Rindx] * ExAccum_L[Rindx] - ExAccum_N[Rindx] * ExAccum_J[Rindx]);
+
+
+			//if(Deno_temp!=0)
+			Diag_buf = 1 / Deno_temp;
+
+			//else if ((Deno_temp == 0) &&(Rindx==118))
+			// Diag_buf=1;
+
+			Diag_H[Rindx] = ExAccum_L[Rindx] * Diag_buf;
+			Diag_N[Rindx] = -ExAccum_N[Rindx] * Diag_buf;
+			Diag_J[Rindx] = -ExAccum_J[Rindx] * Diag_buf;
+			Diag_L[Rindx] = ExAccum_H[Rindx] * Diag_buf;
+
+			// Updating URO Value with the product of ExAccum and inverse of the diagonal element
+			if (Rindx < BusCount)
+			{
+				for (int j = ERPU[Rindx - 1] + 1; j <= ERPU[Rindx]; j++)
+				{
+					//URO[URO_Counter] = Diag[Rindx] * ExAccum[N_CindxU[j]];
+
+					URO_H[URO_Counter] = Diag_H[Rindx] * ExAccum_H[CindxU_Ordered[j]] + Diag_N[Rindx] * ExAccum_J[CindxU_Ordered[j]];
+					URO_N[URO_Counter] = Diag_H[Rindx] * ExAccum_N[CindxU_Ordered[j]] + Diag_N[Rindx] * ExAccum_L[CindxU_Ordered[j]];
+					URO_J[URO_Counter] = Diag_J[Rindx] * ExAccum_H[CindxU_Ordered[j]] + Diag_L[Rindx] * ExAccum_J[CindxU_Ordered[j]];
+					URO_L[URO_Counter] = Diag_J[Rindx] * ExAccum_N[CindxU_Ordered[j]] + Diag_L[Rindx] * ExAccum_L[CindxU_Ordered[j]];
+					URO_Counter++;
+				}
+
+				// Adding Rindx to Lu_Link array 
+				int link_r_no, NextNode;
+
+				link_r_no = CindxU_Ordered[ICPL[Rindx]];
+				// Traversing the Lu_Link array till it finds Lu_link[] = 0
+				while ((NextNode = Lu_Link[link_r_no]) != 0)
+				{
+					link_r_no = Lu_Link[NextNode];
+					if (link_r_no == 0)
+					{
+						link_r_no = NextNode;
+						break;
+					}
+				}
+				// updating the above position with Rindx.
+				Lu_Link[link_r_no] = Rindx;
+			}
+
+		}
+
+		System.out.println();
+
+	}
+
+	void Forward_solve()
+	{
+		// Initializing s,d buffer elements
+
+		delta_V_Ang = new double[BusCount + 1];
+		delta_V_Mag = new double[BusCount + 1];
+
+		double P_buf = 0, Q_buf=0;
+		int[] RindxLO = new int[Cindx.length];
+
+
+		// Applying the forward substituiton routine and updating 'w' array
+		for (int i = 1; i <= BusCount; i++)
+		{
+			for (int j = ERPU[i - 1] + 1; j <= ERPU[i]; j++)
+			{
+				solve_variable = CindxU_Ordered[j];
+				P_buf = P_Mismatch[solve_variable] - LCO_H[j] * P_Mismatch[i] - LCO_N[j] * Q_Mismatch[i];
+				Q_buf = Q_Mismatch[solve_variable] - LCO_J[j] * P_Mismatch[i] - LCO_L[j] * Q_Mismatch[i];
+
+				P_Mismatch[solve_variable] = P_buf;
+				Q_Mismatch[solve_variable] = Q_buf;
+
+			}
+		}
+
+		//  The objective now is to compute the X Matrix  via the product of inverse of diagonal elements
+		//  and W matrix  in the Numerical Factorization routine 
+
+		for (int i = 1; i <= BusCount; i++)
+		{
+			P_buf = Diag_H[i] * P_Mismatch[i] + Diag_N[i] * Q_Mismatch[i];
+			Q_buf = Diag_J[i] * P_Mismatch[i] + Diag_L[i] * Q_Mismatch[i];
+			P_Mismatch[i] = P_buf;
+			Q_Mismatch[i] = Q_buf;
+
+		}
+
+		delta_V_Ang = P_Mismatch;
+		delta_V_Mag = Q_Mismatch;//Copying Arrays 
+	}
+
+	void Backward_solve()
+	{
+		double p_temp = 0;
+		double q_temp = 0;
+
+		// Applying the backward substitution routine using URO (Upper triangular row indices)
+		for (int i = BusCount-1; i >= 1; i--)
+		{
+			for (int j = ERPU[i]; j >= ERPU[i - 1] + 1; j--)
+			{
+				solve_variable = CindxU_Ordered[j];
+				p_temp = P_Mismatch[i] - URO_H[j] * P_Mismatch[solve_variable] - URO_N[j] * Q_Mismatch[solve_variable];
+				q_temp = Q_Mismatch[i] - URO_J[j] * P_Mismatch[solve_variable] - URO_L[j] * Q_Mismatch[solve_variable];
+				P_Mismatch[i] = p_temp;
+				Q_Mismatch[i] = q_temp;
+
+			}
+		}
+
+		delta_V_Ang = P_Mismatch;
+		delta_V_Mag = Q_Mismatch;
+	}
+
+	void compute_lineflows()
+	{
+
+
+		int k, l, m;
+
+		for (int i = 1; i <BusCount; i++)
+		{
+			k = From_Bus[i];
+			l = To_Bus[i];
+			//******** multiply by base if needed
+			P_ik[i] = V_Mag[i] * V_Mag[i] * (G_ik[i] + GB[i]) - V_Mag[i] * V_Mag[k] * (GB[i] * Math.cos(V_Ang[i] - V_Ang[k]) + BB[i] * Math.sin(V_Ang[i] - V_Ang[k]));
+			Q_ik[i] = V_Mag[i] * V_Mag[i] * (B_ik[i] + BB[i]) - V_Mag[i] * V_Mag[k] * (GB[i] * Math.sin(V_Ang[i] - V_Ang[k]) + BB[i] * Math.cos(V_Ang[i] - V_Ang[k]));
+			P_ki[i] = V_Mag[k] * V_Mag[k] * (G_ki[i] + GB[i]) - V_Mag[i] * V_Mag[k] * (GB[i] * Math.cos(V_Ang[k] - V_Ang[i]) + BB[i] * Math.sin(V_Ang[k] - V_Ang[i]));
+			Q_ki[i] = V_Mag[k] * V_Mag[k] * (B_ki[i] + BB[i]) - V_Mag[i] * V_Mag[k] * (GB[i] * Math.sin(V_Ang[k] - V_Ang[i]) - BB[i] * Math.cos(V_Ang[k] - V_Ang[i]));
+		}
+
+
+
+	}
+
+	void Solve()
+	{
+		//int flip=0;
+		float[] Rmax= new float[120]; 
+		float[] Rmin=new float[120];
+
+		double[] temp_VMag = new double[119];
+		double[] temp_VAng = new double[119];
+
+		Create_Y_Bus();
+		Tinney_Ordering();
+		Create_LU();
+		rowtocolumn();
+		columntorow();
+		initialize_voltage();
+		
+		int flip=0;
+
+		int iteration=1;
+		for(iteration=1;iteration<=10;iteration++)
+		{
+			
+			injection_flow();
+
+			if (iteration>3)
+			{
+				flip = bus_switch();
+
+				if(flip==2)
+					injection_flow();	
+			}
+
+			power_mismatch();
+
+			if(flip==0)
+			{
+				if(Max_P_Mismatch<tolerence || Max_Q_Mismatch<tolerence)
+				{
+					iteration=iteration-1;
+					break;
+				}
+			}
+			else
+			{
+				for(int k=0;k<Q_max_Bus.length;k++)
+				{
+					Rmax[k]= Q_max_Bus[k];
+					Rmin[k] = Q_min_Bus[k];
+				}
+			}
+
+			create_jacobian();
+			Factorize_jacobian();
+			Forward_solve();
+			Backward_solve();
+
+			for(int i=1;i<=BusCount;i++)
+			{
+				V_Mag[i] =V_Mag[i] + delta_V_Mag[i];
+				V_Ang[i] =V_Ang[i] + delta_V_Ang[i];
+			}
+
+
+			System.out.println();
+		}
+
+		ReOrdering();
+
+		System.out.println("The Powerflow successfully converges after "+iteration+" Newton-Raphson iterations ");
+		
+		for(double v:V_Mag)
+			System.out.println(v);
+		
+		for(double q:V_Ang)
+			System.out.println(q);
+
+		//	compute_lineflows();
+	}
+
+	private void ReOrdering() {
+		// TODO Auto-generated method stub
+
+		double[] t_V_Mag = new double[119];
+		double[] t_V_Ang = new double[119];
+
+		for(int i=1;i<=BusCount;i++)
+		{
+			for(int j=1;j<=BusCount;j++)
+			{
+				if(Matrix_size[j]==i)
+				{
+					t_V_Mag[i]= V_Mag[j];
+					t_V_Ang[i]= V_Ang[j];
+				}
+			}
+		}
+
+		V_Mag = t_V_Mag;
+		V_Ang = t_V_Ang;
+	}
 }

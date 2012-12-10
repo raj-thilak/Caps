@@ -53,7 +53,7 @@ public class Sub_Routines {
 	float[] Q_Min_Var ={0, -5 ,  0 ,  0 ,  -300 ,  0 ,  -13 ,  0 ,  -300 ,  0 ,  -147 ,  0 ,  -35 ,  0 ,  0 ,  -10 ,  0 ,  0 ,  -16 ,  -8 ,  0 ,  0 ,  0 ,  0 ,  -300 ,  -47 ,  -1000 ,  -300 ,  0 ,  0 ,  0 ,  -300 ,  -14 ,  0 ,  -8 ,  0 ,  -8 ,  0 ,  0 ,  0 ,  -300 ,  0 ,  -300 ,  0 ,  0 ,  0 ,  -100 ,  0 ,  0 ,  -85 ,  0 ,  0 ,  0 ,  0 ,  -300 ,  -8 ,  -8 ,  0 ,  0 ,  -60 ,  0 ,  -100 ,  -20 ,  0 ,  0 ,  -67 ,  -67 ,  0 ,  0 ,  -300 ,  -10 ,  0 ,  -100 ,  -100 ,  -6 ,  0 ,  -8 ,  -20 ,  0 ,  0 ,  -165 ,  0 ,  0 ,  0 ,  0 ,  -8 ,  0 ,  -100 ,  0 ,  -210 ,  -300 ,  -100 ,  -3 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  -100 ,  -50 ,  0 ,  0 ,  -15 ,  -8 ,  -8 ,  0 ,  -200 ,  0 ,  0 ,  -8 ,  -100 ,  -100 ,  -100 ,  0 ,  0 ,  -1000 ,  0 ,  0 };
 
 	int b_l = Bsh.length;
-	double tolerence= 10E-4;
+	double tolerence= 10E-6;
 	//int[] N_Row_ele = new int[119];
 
 	int[] ERP = new int[119];
@@ -64,7 +64,7 @@ public class Sub_Routines {
 
 	int[] Cindx = new int[477];//no of branches considered for size 
 	int ERP_Counter = 0;
-	int Mat_Counter = 0;
+	int Y_Counter = 0;
 	int[] ele_added = new int[119];
 	double[] Y_Mat_G = new double[477];// size justification = 2*(no of branches) + 118-> (diagonal elements)
 
@@ -107,7 +107,7 @@ public class Sub_Routines {
 	int[] ECPU;//An array which stores End of column Pointers of U
 	int[] Switch;//Switch Array used in creating LU Data Matrix_sizeucture
 	int[] Link ;// Self referential linked-list array which stores various links
-	int[] Link_LU;
+
 	int[] nxtcolptr;// Next Column Pointer array used in ordering 
 	int[] nxtrowptr;// Next row pointer array used in ordering
 
@@ -127,8 +127,10 @@ public class Sub_Routines {
 	//Variables for Bus Switching
 
 	int [] Bus_Type_Switch;
-	float[] Q_max_Bus;
-	float[] Q_min_Bus;
+	//	float[] Q_max_Bus;
+	//	float[] Q_min_Bus;
+	int [] Q_max_Bus = new int[BusCount + 1];
+	int [] Q_min_Bus = new int[BusCount + 1];
 	int bus_switch;
 
 	// Variables for Mismatch Calculation
@@ -146,7 +148,7 @@ public class Sub_Routines {
 	double[] L;
 
 	//Factorize Jacobian Variables
-	int[] Lu_Link;
+	int[] Link_LU;
 	int[] ICPL;
 	double[] ExAccum_H;
 	double[] ExAccum_J;
@@ -176,16 +178,69 @@ public class Sub_Routines {
 	double[] P_ki;
 	double[] Q_ki;
 
+	int tester;
+	
 	public void Data_Extract()
 	{
+		FileRead test = new FileRead();
+		
+		tester = test.test;
+		
+		System.out.println(tester);
 	}
+
+	/*
+	 ********************************************************************************
+	 * Function Name : Create_Y_Bus()
+	 * Function Type : Sub- Routine
+
+	 * Summary:
+	 * This sub routine is used to create the Y-Bus Matrix using the data extracted
+	 * from the previous step.
+	 * ******************************************************************************
+	 * Characteristics:
+	 * 
+	 * Language			:	JAVA
+	 * Development Kit	: 	Eclipse -JUNO
+	 * Java Library		: 	JAVASE-1.7
+	 * CPU				: 	Intel Core i5 [TM]
+	 * Author			: 	Rajthilak Murugesan
+	 * Reference		: 	Prof. Daniel Tylavsky Lectures, EEE 574 , ASU, Fall 2012
+	 * ******************************************************************************
+	 * Input Elements :
+	 *  
+	 *  Gsh			: Shunt Conductance
+	 *  BranchCount	: No. of Branches 
+	 *  Bsh			: Shunt Suseptance
+	 *  BusCount	: No. of Buses 
+	 *  From_Bus	: Array that stores the numbers of 'From' Bus
+	 *  R			: Array that contains the values of resistances
+	 *  To_Bus		: Array that contains the numbers of 'To' Bus 
+	 *  X			: Array that stores the values of reactances
+	 * ******************************************************************************
+	 * Output Elements :
+
+	 * Cindx[]		: An array that stores the values of Column Indices of the Elements
+	 * ERP[]		: An array that stores the values of End of Row Pointers
+	 * Y_Mat_B[]	: An array that stores the values of Suseptance
+	 * Y_Mat_G[]	: An array that stores the values of Conductance
+	 * ******************************************************************************
+	 * Internal Elements:
+	 * BB[]			: Array that stores Branch Suseptances
+	 * Bself[]		: Array that stores Self Suseptance
+	 * GB[]			: Array that stores Branch Conductance
+	 * Gself[]		: Array that stores Self conductance
+	 * SB[]			: Array that stores Line Charging Capacitance
+	 * Tap_Multiplier: A scalar multiplier used as a tap ratio for transformer
+	 * Y_Counter	: A scalar counter element that is used to G and B matrices
+	 * Z			: An array that stores the values of impedances
+	 */
 
 	public void Create_Y_Bus()
 
 	{
 
-		//****** make sure that data extractiona and Y bus formulation are separate routines.********
-
+		// Write this loop into Data Extract as Initialization
 		for (int i = 1; i <= 118; i++)
 		{
 			P_load[i] = P_load[i] / Base;
@@ -197,119 +252,194 @@ public class Sub_Routines {
 		}
 
 
-		// Self conductance and self susceptance calculated from Bus data calculated at 1 MVA base
+		// Calculate Self Suseptance and Conductances
 		for (int i = 1; i < 119; i++)
 		{
-			Gself[i] = Gsh[i] ;// base = 100 MVA in both cases.
+			Gself[i] = Gsh[i] ;
 			Bself[i] = Bsh[i] ;
 		}
 
-		int Tp = 1;
-		//double[] A= new double[187];
-		double A = 1;
+		double Tap_Multiplier = 1;
 
-		// creating tap ratio for the modified transformer model
+		// Create tap ratio for the modified transformer model
+		// Preapre Data for Y Bus Formulation
 		for (int i = 1; i <= BranchCount; i++)
 		{
 			if (BranchType[i] == 0)
-				A = 1 ;
+				Tap_Multiplier = 1 ;
 			else
-				A = 1 / Tp_ratio[i];
+				Tap_Multiplier = 1 / Tp_ratio[i];
 
-			Z[i] =( R[i] * R[i]) + (X[i] * X[i]);
-			// GB[i] = 100 * R[i] / Z[i] * A;
-			GB[i] = (R[i] / Z[i]) * A;
+			// Compute Branch Impedance
+			Z[i] =( R[i]*R[i]) + (X[i] * X[i]);
+			// Compute Branch Conductance
+			GB[i] = (R[i] / Z[i]) * Tap_Multiplier;
 
-			// BB[i] = 100 * (X[i] / Z[i]) * A;
-			BB[i] = -(X[i] / Z[i]) * A;
+			//Compute Branch Suseptance
+			BB[i] = -(X[i] / Z[i]) * Tap_Multiplier;
+
+			// Compute Branch Line Charging Capacitance
 			SB[i] = 0.5* Bshx2[i];
 
-			// computing the diagonal elements of the G and the B matrix
 
+			// Calculate the diagonal elements of the G and the B matrix
 
-			Gself[From_Bus[i]] = Gself[From_Bus[i]] + GB[i]*A;
-			Bself[From_Bus[i]] = Bself[From_Bus[i]] + BB[i]*A + SB[i];
+			Gself[From_Bus[i]] = Gself[From_Bus[i]] + GB[i]*Tap_Multiplier;
+			Bself[From_Bus[i]] = Bself[From_Bus[i]] + BB[i]*Tap_Multiplier + SB[i];
 
-			Gself[To_Bus[i]] = Gself[To_Bus[i]] + GB[i] / A;
-			Bself[To_Bus[i]] = Bself[To_Bus[i]] + BB[i] / A + SB[i];
+			Gself[To_Bus[i]] = Gself[To_Bus[i]] + GB[i] / Tap_Multiplier;
+			Bself[To_Bus[i]] = Bself[To_Bus[i]] + BB[i] / Tap_Multiplier + SB[i];
 		}
 
 
-		// Creating Y bus structure
+		// For Loop for creating Ybus Structure
 
+		// Outer 'for' loop accounts for all the buses
 		for (int i = 1; i <= BusCount; i++)
 		{
-			Mat_Counter++;
-			//	System.out.println(Mat_Counter);
-			//update Diagonal element, Cindx for diag ele
-			Y_Mat_G[Mat_Counter] = Gself[i];
-			Y_Mat_B[Mat_Counter] = Bself[i];
-			Cindx[Mat_Counter] = i;
+			Y_Counter++;
+			Y_Mat_G[Y_Counter] = Gself[i];
+			Y_Mat_B[Y_Counter] = Bself[i];
+			Cindx[Y_Counter] = i;
 			ele_added[i]++;
 
+			//Inner 'for' loop accounts for branches in From Bus  
 			for (int j = 1; j <= BranchCount; j++)
 			{
 
 				if (From_Bus[j] == i)
 				{
-					Mat_Counter++;
-					Y_Mat_G[Mat_Counter] = -GB[j];
-					Y_Mat_B[Mat_Counter] = -BB[j];
-					Cindx[Mat_Counter] = To_Bus[j];
+					//Update Diagonal Elements
+					Y_Counter++;
+					Y_Mat_G[Y_Counter] = -GB[j];
+					Y_Mat_B[Y_Counter] = -BB[j];
+					Cindx[Y_Counter] = To_Bus[j];
 					ele_added[i]++;
 
+					// Check condition for double circuit
 					if (j < BranchCount)
 					{
 						if (To_Bus[j] == To_Bus[j + 1] && From_Bus[j + 1] == i)
 						{
-							Y_Mat_G[Mat_Counter] = -GB[j] - GB[j + 1];
-							Y_Mat_B[Mat_Counter] = -BB[j] - BB[j + 1];
-							Cindx[Mat_Counter] = To_Bus[j];
+							Y_Mat_G[Y_Counter] = -GB[j] - GB[j + 1];
+							Y_Mat_B[Y_Counter] = -BB[j] - BB[j + 1];
+							Cindx[Y_Counter] = To_Bus[j];
 							j++;
-							// ele_added[i]++;
 						}
 					}
 				}
+
+				// Update Diagonal element from  
 				if (To_Bus[j] == i)
 				{
-					Mat_Counter++;
-					Y_Mat_G[Mat_Counter] = -GB[j];
-					Y_Mat_B[Mat_Counter] = -BB[j];
-					Cindx[Mat_Counter] = From_Bus[j];
+					Y_Counter++;
+					Y_Mat_G[Y_Counter] = -GB[j];
+					Y_Mat_B[Y_Counter] = -BB[j];
+					Cindx[Y_Counter] = From_Bus[j];
 					ele_added[i]++;
 
+					// Check condition for double circuit
 					if (j < BranchCount)
 					{
 						if (From_Bus[j] == From_Bus[j + 1] && To_Bus[j + 1] == i)
 						{
-							Y_Mat_G[Mat_Counter] = -GB[j] - GB[j + 1];
-							Y_Mat_B[Mat_Counter] = -BB[j] - BB[j + 1];
-							Cindx[Mat_Counter] = From_Bus[j];
+							Y_Mat_G[Y_Counter] = -GB[j] - GB[j + 1];
+							Y_Mat_B[Y_Counter] = -BB[j] - BB[j + 1];
+							Cindx[Y_Counter] = From_Bus[j];
 							j++;
-							//ele_added[i]++;
 						}
 					}
 				}
 
 			}
-
-
-
 		}
 
-		// Calculating ERP
 
-
+		// for loop to calculate ERP
 		for (int i = 1; i <= BusCount; i++)
 		{
 			ERP[i]= ERP[i-1] + ele_added[i];
-
 		}
 
-		System.out.println("END");
+		//System.out.println("End of Routine - Create_Y_Bus");
 
 
 	}
+
+	/*
+	 **********************************************************************************
+	 * Function Name : Create_LU()
+	 * Function Type : Sub- Routine
+
+	 * Summary:
+	 * The method Create_LU obtains the data processed by Tinney_Ordering and works 
+	 * on it to develop a robust and an efficient data structure to perform 
+	 * Numerical Factorization  of the Jacobian Matrix. The data output hence obtained 
+	 * should be ordered in order to get RRCU type of data set. 
+	 * 
+	 * The symbolic portion of the Lower (L), Upper (U) and Diagonal(D) 
+	 * triangular matrices are formed.
+	 * ********************************************************************************
+	 * Characteristics:
+	 * 
+	 * Language			:	JAVA
+	 * Development Kit	: 	Eclipse -JUNO
+	 * Java Library		: 	JAVASE-1.7
+	 * CPU				: 	Intel Core i5 [TM]
+	 * Author			: 	Rajthilak Murugesan
+	 * Reference		: 	Prof. Daniel Tylavsky Lectures, EEE 574 , ASU, Fall 2012
+	 * ********************************************************************************
+	 * Input Elements :
+
+	 * Cindx[]	:	An Array that contains Column Indices of the Elements
+	 * ERP[]	:	An Array that contains end of row pointers
+	 * y[]		:	An Array that contains Matrix elements
+	 * *********************************************************************************
+	 * Output Elements :
+
+	 * CindxU	: 	An array which stores column indices of U Factor
+	 * ERPU		: 	An array that stores end of row pointers of U
+	 * Fillins	: 	Variable that stores the fill-in counts
+	 * **********************************************************************************
+	 * Internal Variables
+
+	 * rownumber	:	An Array that Stores the row number of the element
+	 * tdiagonal	:	Temporary diagonal value store variable
+	 * Link			:	Self – referential linked list used in creating LU
+	 * Switch		:	Switch Array used in creation of LU structure
+	 * tCindU		:	Temporary list which dynamically creates CindxU
+	 * MinNode		:	Variable for storing Min Node value
+	 * k,i,z		:	For Loop Variables
+	 * tlink		:	temporary link varible
+	 * ERPUCounter	:	Counter to keep track of EPRU
+	 * nextlink		:	Link Variable used in Linked list handling
+	 * CindxU_Counter:	Counter to add tCindxU list back into CindxU
+	 * ***********************************************************************************
+	 * Step-by-Step Procedure[General]
+	 * Step 0:
+	 * Zero linked list (LINK(NoBus)) (which will be used to store all rows which contribute 
+	 * fill to each row, i.) We will use the Fill-In Corollary: e.g., if row 15 is used when 
+	 * accounting for fill to row 21 then it need not be used when accounting for fill to 
+	 * any other row.)Zero switch array (Switch(NoBus)). Set i=1.
+	 * Step 1:
+	 * For row i, allocate space in data structure of URU for original non-zero’s and copy 
+	 * column indices into this space. (Use switch array to track which column indices are 
+	 * added to row i of URU.) Updating row pointer (ERPU) and column indices (CIndx) as 
+	 * each col. index is added. Keep track of lowest numbered off-diagonal non-zero entry to 
+	 * the right of the diagonal (MinNod).
+	 * Step 2:
+	 * Enter “fill linked list” (LINK) in ith position. For each row j, linked to row i, find 
+	 * all non-zeros to the right of the ith column, merge those column indices with native 
+	 * indices (using switch array (Switch)). Update column indices (CIndx) and row pointers 
+	 * (ERPU). Update lowest numbered off-diagonal non-zero entry to the right of the 
+	 * diagonal (MinNod).
+	 * Step 3:
+	 * Add to the “fill linked list” (LINK) associating row i with the row number to which it 
+	 * contributes fill (MinNod). That row number is found using Fill-In Theorem.
+	 * Step 4:
+	 * If this i<NOBS-1,i:=i+1 go to Step 1. Else End
+	 * ***************************************************************************************
+	 */
 
 	public void Create_LU()
 	{
@@ -325,15 +455,29 @@ public class Sub_Routines {
 		int k=0;
 		tCindxU.add(0); 
 
+		// The ERPUCounter variable acts as a counter for updating EPRU
 		for(int j=1;j<ERP.length;j++)
 		{
-			MinNode=100000;
-			erpold=ERP[j-1]+1;
-			erpcount=ERP[j];
+			/*Step 0:* Initialize Minode* Zero the Switch Array * Zero the link Array */
 
+			MinNode=100000;//Initializing Min Node at the start of each node
+
+			//Pl Note: The MinNode is set to a very high value to make the comparison
+			//and updating of the link-list more efficient
+
+			erpold=ERP[j-1]+1;
+			//erpold is a local varible used for initializing the for loop
+
+			erpcount=ERP[j];
+			// Determine the local varible to set the limit for for-loop
+
+			/* Step 1:* Copy the original matrix using Switch,ERP * Update MinNode, ERPU*/
 
 			for(k=erpold;k<=erpcount;k++)
 			{
+
+				/* * Perform a check if the element is Diagonal 
+				 *  If the element is diagonal, perform no operation*/
 				if(Cindx[k]==j)
 				{
 					//					System.out.println(y[k]);
@@ -343,13 +487,12 @@ public class Sub_Routines {
 				}
 				else if((Cindx[k]!=j)&& Cindx[k]>j)
 				{
-					//columnnumber.add(Cindx[k]);
-					//Updating CindxU
-
+					//Updating tCindxUby adding the cindx of the element
 					tCindxU.add(Cindx[k]);
 
 					//Updating Min Node Value
-
+					/*The If-else loops checks if the element is a MinNode 
+					 * and updates corresponding to the cindx value of element*/
 					if (MinNode ==100000 )
 						MinNode = Cindx[k];
 					else if (Cindx[k] < MinNode)
@@ -373,7 +516,10 @@ public class Sub_Routines {
 			}
 
 			int tlink=j;
-
+			/* Step 2:Using Link to adjust fill, 109.Update Minnode , 
+			 * ERPU <Everthing with help of steering for-loop 
+			 * Step 3: 111. * Add corresponding row to the linked list*/  
+			//Initialize nextlink , which is the link associated with tlink
 
 			while((nextlink=Link[tlink])!=0)
 			{
@@ -386,6 +532,10 @@ public class Sub_Routines {
 					//						MinNode=CindxU[z];
 					//					else if((CindxU[z]<MinNode)&&(CindxU[z]>j))
 					//						MinNode=CindxU[z];
+
+					//Check if the corresponding index of tCindxU is
+					//greater than row being processed, if Yes. Do not process
+					// similarly check if the switch contains the row number.
 
 					if((tCindxU.get(z)>j)&&(Switch[tCindxU.get(z)]!=j))
 					{
@@ -409,6 +559,11 @@ public class Sub_Routines {
 			}
 
 			tlink=MinNode;
+			//Finally,
+			//Add the row processed to the linked list and zero the linked list array
+			//Identify the next position by searching for the Link with indices Zero
+			//Simultaneously, Update the Minnode value with the nextlink value
+
 			if(MinNode != 100000){
 				while((nextlink=Link[tlink])!=0)
 				{
@@ -426,14 +581,19 @@ public class Sub_Routines {
 				Link[MinNode]=j;
 			}
 
+			// Processing the data stored in Intger Arraylist, tCindxU
+			//to int[] array CindxU to enable easy access for the future
 			int CindxCounter=0;
 			CindxU=new int[tCindxU.size()];
+
+			// For-loop to copy all elements of tCindxU to CindxU
 			for(int i=0;i<tCindxU.size();i++)
 			{
 				CindxU[i]=tCindxU.get(i);
 				CindxCounter++;
 			}
 		}
+
 		System.out.println(Fillins);
 
 		//	        	System.out.println("Pos");
@@ -455,18 +615,89 @@ public class Sub_Routines {
 		//				System.out.println("\n Link");
 		//	        	for(int q=0;q<Link.length;q++)
 		//	        		System.out.print("\t"+Link[q]);
+
+		//System.out.println("End of Routine - Create_LU");
 	}
+
+	/*
+	 ********************************************************************************
+	 * Function Name : rowtocolumn()
+	 * Function Type : Sub- Routine
+
+	 * Summary:
+ 		The CIndxU obtained by the LU Symbolic factorization is unordered in nature. 
+ 		In LU Numerical factorization it would be much more convenient if the data-
+ 		structure CIndxU is ordered. This subroutine is the first part of this 
+ 		ordering process and it would convert ERPU to ECPU.
+
+	 * *******************************************************************************
+	 * Characteristics:
+	 * 
+	 * Language			:	JAVA
+	 * Development Kit	: 	Eclipse -JUNO
+	 * Java Library		: 	JAVASE-1.7
+	 * CPU				: 	Intel Core i5 [TM]
+	 * Author			: 	Rajthilak Murugesan
+	 * Reference		: 	Prof. Daniel Tylavsky Lectures, EEE 574 , ASU, Fall 2012
+	 * ******************************************************************************
+	 * Input Elements :
+
+	 * CindxU	: 	An array which stores column indices of U Factor
+	 * ERPU		: 	An array that stores end of row pointers of U
+	 * *******************************************************************************
+	 * Output Elements :
+
+	 * CindxU_Ordered	: 	An array which stores column indices of U Factor in order
+	 * ECPU 			:	An array that stores end of column pointers of U
+
+	 * ********************************************************************************
+	 * Internal Variables
+
+	 * tstoreelement	:	Temporary store variable
+	 * tposition 		:	Temporary position identifier variable
+	 * nxtcolptr 		:	Next column Pointer array used in column-row conversion
+	 * RindxU 			:	An Array that stores row indices of U
+	 * i,j 				:	For loop elements
+	 * *********************************************************************************
+	 * Step-by-Step Procedure[General]
+
+	 * Row to Cols. Storage Conversion Routine
+	 * Step 1:  
+	 * Copy existing row pointers as new column pointers.
+	 * Count number of elements in each column.  
+	 * Set up pointers to the beginning of each column by forming evolving sum.  
+	 * Add 1 to each element and perform a right shift on the results
+	 * Step 2:  
+	 * Scan row I.  Store each element of matrix and appropriate row indices in first 
+	 * available and appropriate column position.
+	 * Step 3:  
+	 * Increment ‘NxColPt’ for each column in which entries were made.
+	 * Step 4:  
+	 * If I<N, continue, else repeat for next row (i.e.,  I:=I+1,and go to step 2.)
+	 * Step 5:  
+	 * Perform left shift on ‘NxColPt’ to get ECP 
+	 * *********************************************************************************
+	 */
 
 	public void rowtocolumn()
 	{
+		// initializing the local variable tposition to zero 
+		// tposition helps in counting number of elements in each column
 		int tposition = 0;
+
+		// Create a temporary nextcol pointer array that stores the no. of elements
 		nxtcolptr = new int[ERP.length];
+
+		//Initialize nxtcolptr and RindxU to respective sizes
 		int[] t_nxcolpt = new int[ERP.length];
 		RindxU= new int[CindxU.length];
 
-
-		//Counting the no of elements in a row
-
+		/*
+		 * step 0 
+		 * Accumulate the number of elements in each column 
+		 * Using a For-Loop , count the elements using tposition 
+		 * and store the number to t_nxcoltpt and increment the counter
+		 */
 		for (int i = 1; (i < CindxU.length-1); i++)
 		{
 			if (CindxU[i] == 0)
@@ -475,9 +706,18 @@ public class Sub_Routines {
 			t_nxcolpt[tposition]++;
 
 		}
-		//Performing a running sum on the next column pointer 
+
+		/*
+		Step 1 : Perform Running Sum to Obtain Nxtcolptr 
+		Pl Note, the first element is always 1, 
+		 */
 		nxtcolptr[1] = 1;
 
+		/*
+		 * Step 2,3 & 4 
+		 * For Each row, enter row index i, in appropriate pos 
+		 * Update the nxtcolptr
+		 */
 		for (int i = 2; i < ERP.length; i++)
 		{
 			nxtcolptr[i] = nxtcolptr[i - 1] + t_nxcolpt[i - 1];
@@ -496,6 +736,12 @@ public class Sub_Routines {
 			}
 		}
 
+		/*
+		 * Step 5 
+		 * Subtract 1 from nxtcolptr to obtain ECPU 
+		 * This is performed using a simple for loop
+		 */
+
 		for (int i = 1; i <nxtcolptr.length; i++)
 			ECPU[i] = nxtcolptr[i] - 1;
 
@@ -503,20 +749,96 @@ public class Sub_Routines {
 		//		for(int q=0;q<RindxU.length;q++)
 		//			System.out.print("\t"+RindxU[q]);
 		//
-		System.out.println("\n ECPU");
+		//		System.out.println("\n ECPU");
 		//		for(int q=0;q<ECPU.length;q++)
 		//			System.out.print("\t"+ECPU[q]);
+
+		//System.out.println("End of Routine - rowtocolumn ");
 	}
+
+	/*
+	 ********************************************************************************
+	 * Function Name : columntorow()
+	 * Function Type : Sub- Routine
+
+	 * Summary:
+ 		The data structure stored by columns after the rowtocolumn() conversion is 
+ 		again converted to row representation and the data structure obtained after 
+ 		this is an ordered data structure which would be convenient for LU Numerical 
+ 		factorization. The ouput of this routine is CindxU_Ordered and ERPU arrays 
+ 		used for Numerical Factorization of the Y matrix.
+
+	 * *******************************************************************************
+	 * Characteristics:
+	 * 
+	 * Language			:	JAVA
+	 * Development Kit	: 	Eclipse -JUNO
+	 * Java Library		: 	JAVASE-1.7
+	 * CPU				: 	Intel Core i5 [TM]
+	 * Author			: 	Rajthilak Murugesan
+	 * Reference		: 	Prof. Daniel Tylavsky Lectures, EEE 574 , ASU, Fall 2012
+	 * ******************************************************************************
+	 * Input Elements :
+
+	 * CindxU_Ordered	: 	An array which stores column indices of U Factor in order
+	 * ECPU 			:	An array that stores end of column pointers of U
+
+	 * *******************************************************************************
+	 * Output Elements :
+
+	 * CindxU_Ordered	: 	An array which stores column indices of U Factor in order
+	 * ERPU 			:	An array that stores end of row pointers of U
+
+	 * ********************************************************************************
+	 * Internal Variables
+
+	 * tstoreelement	: 	Temporary store variable
+	 * tposition 		:	Temporary position identifier variable
+	 * nxtrowptr 		:	Next column Pointer array used in column-row conversion
+	 * i,j 				:	For loop elements
+	 * *********************************************************************************
+	 * Step-by-Step Procedure[General]
+
+	 * Col to Row. Storage Conversion Routine
+	 * Step 1:  
+	 * Copy existing col pointers as new row pointers.
+	 * Count number of elements in each row.  
+	 * Set up pointers to the beginning of each row by forming evolving sum.  
+	 * Add 1 to each element and perform a right shift on the results
+	 * Step 2:  
+	 * Scan row I.  Store each element of matrix and appropriate row indices in first 
+	 * available and appropriate row position.
+	 * Step 3:  
+	 * Increment ‘NxRowPt’ for each column in which entries were made.
+	 * Step 4:  
+	 * If I<N, continue, else repeat for next row (i.e.,  I:=I+1,and go to step 2.)
+	 * Step 5:  
+	 * Perform left shift on ‘NxRowPt’ to get ERPU 
+	 * *********************************************************************************
+	 */
 
 	public void columntorow()
 	{
+
+		//* The sub-routine is similar to the rowtocolumn()conversion
+
+		// initializing the local variable tposition to zero 
+		// tposition helps in counting number of elements in each row
+
 		int tposition = 0;
+
+		// Create a temporary nextrow pointer array that stores the no. of elements
 		nxtrowptr = new int[ERP.length];
 		int[] t_nxtrowptr = new int[ERP.length];
 
 		CindxU_Ordered = new int[CindxU.length];
 
-		//Counting the no of elements in a row
+		/*
+		step 0  
+		 * Accumulate the number of elements in each row 
+		 * Using a For-Loop , count the elements using tposition
+		 * and store the number to t_nxtrowtpt and increment the counter
+		 */
 		for (int i = 1; i < RindxU.length - 1; i++)
 		{
 			if (RindxU[i] == 0)
@@ -525,10 +847,22 @@ public class Sub_Routines {
 			t_nxtrowptr[tposition]++;
 		}
 
-		//Performing a running sum on the next row pointer 
+		/*
+		 * Step 1 : 
+		 * Perform Running Sum to Obtain Nxtrowptr 
+		 * Pl Note, the first element is always 1,
+		 * Now perform running sum and right shift elements by 1 position
+		 */
+		//Initializing first position with 1
 		nxtrowptr[1] = 1;
 		for (int i = 2; i < ERP.length; i++)
 			nxtrowptr[i] = nxtrowptr[i - 1] + t_nxtrowptr[i - 1];
+
+		/*
+		 * Step 2,3 & 4 
+		 * For Each row, enter row index i, in appropriate pos 
+		 * Update the nxtrowptr
+		 */
 
 		int tstore;
 		for (int i = 1; i < ECPU.length - 1; i++)
@@ -541,9 +875,17 @@ public class Sub_Routines {
 			}
 		}
 
+		/*
+		 * Step 5 
+		 * Subtract 1 from nxtrowptr to obtain ECPU 
+		 * This is performed using a simple for loop
+		 */
+
 		for (int i = 1; i < nxtrowptr.length-1; i++)
 			ERPU[i] = nxtrowptr[i]-1;
 
+
+		//Print ERPU and CindxU_ordered as markers to check the accuracy of the code
 		//		System.out.println("\n CindxU Ordered");
 		//		for(int q=0;q<CindxU_Ordered.length;q++)
 		//			System.out.print("\t"+CindxU_Ordered[q]);
@@ -552,86 +894,222 @@ public class Sub_Routines {
 		//		for(int q=0;q<ERPU.length;q++)
 		//			System.out.print("\t"+ERPU[q]);
 
+		//System.out.println("End of Routine - columntorow ");
+
 	}
+
+	/*
+	 ********************************************************************************
+	 * Function Name : initialize_voltage()
+	 * Function Type : Sub- Routine
+
+	 * Summary:
+ 		This function  initializes the voltages to 1 P.U and angles to 0 depending 
+ 		on type of the bus.  
+	 * *******************************************************************************
+	 * Characteristics:
+	 * 
+	 * Language			:	JAVA
+	 * Development Kit	: 	Eclipse -JUNO
+	 * Java Library		: 	JAVASE-1.7
+	 * CPU				: 	Intel Core i5 [TM]
+	 * Author			: 	Rajthilak Murugesan
+	 * Reference		: 	Prof. Daniel Tylavsky Lectures, EEE 574 , ASU, Fall 2012
+	 * ******************************************************************************
+	 * Input Elements :
+
+	 * Bus_Type			:	An array that stores the type of Bus 
+	 * Desired_Voltage	:	An array that stores the specified volatges on the Buses
+	 * *******************************************************************************
+	 * Output Elements :
+
+	 * V_Mag		:	An array that stores the voltage magnitude of the buses	
+	 * V_Ang 		:	An array that stores the angles of the bus
+	 * ********************************************************************************
+	 * Internal Variables
+	 * 
+	 * i	: For loop iterator 
+	 * *********************************************************************************
+	 */
 
 	public void initialize_voltage()
 	{
 		for(int i =1; i<=BusCount; i++)
 		{
-			if (Bus_Type[i]==2)
+			if (Bus_Type[i]==2) // Check if Generator Bus
 				V_Mag[i]=Desired_Voltage[i];
-			else if (Bus_Type[i]==3)
+			else if (Bus_Type[i]==3)// Check if Slack Bus 
 				V_Mag[i]=Desired_Voltage[i];
 			else
 				V_Mag[i]=1;
 
-			V_Ang[i]=0;
+			V_Ang[i]=0;// Set angles to zero
 
 		}
+
+		//System.out.println("End of Routine - initialize_voltage ");
 	}
 
-	public void injection_flow()
+	/*
+	 ********************************************************************************
+	 * Function Name : injections()
+	 * Function Type : Sub- Routine
+
+	 * Summary:
+		The objective of this routine is to calculate the injected power in each bus.
+		The data from the YBus matrix is used to calculate the injected power  
+	 * *******************************************************************************
+	 * Characteristics:
+	 * 
+	 * Language			:	JAVA
+	 * Development Kit	: 	Eclipse -JUNO
+	 * Java Library		: 	JAVASE-1.7
+	 * CPU				: 	Intel Core i5 [TM]
+	 * Author			: 	Rajthilak Murugesan
+	 * Reference		: 	Prof. Daniel Tylavsky Lectures, EEE 574 , ASU, Fall 2012
+	 * ******************************************************************************
+	 * Input Elements :
+
+	 * Bus_Type			:	An array that stores the type of Bus 
+	 * Desired_Voltage	:	An array that stores the specified volatges on the Buses
+	 * *******************************************************************************
+	 * Output Elements :
+
+	 * P_Calc	:	Real Power injected in each bus
+	 * Q_Calc	:	Reactive Power injected in each bus 
+
+	 * ********************************************************************************
+	 * Internal Variables
+
+	 * i				: For loop iterator 
+	 * K				: Temporary variable used to store Cindx
+	 * G_Multiplier		: Multiplier that stores math operation on G for P 	
+	 * B_Multiplier		: Multiplier that stores math operation on B for P
+	 * G_Q_Multiplier	: Multiplier that stores math operation on G for Q 
+	 * B_Q_Multiplier	: Multiplier that stores math operation on B for Q
+
+	 * *********************************************************************************
+	 * Step-by-Step Procedure
+
+	 	Initialize the real power and the reactive power injections to zero
+	 	Using ERP , Cindx Calculate the injections at each bus
+	 *********************************************************************************
+	 */
+
+	public void injections()
 	{
-		double G_P,B_P,G_Q,B_Q;
-
-
+		double G_Multiplier,B_Multiplier,G_Q_Multiplier,B_Q_Multiplier;
 
 		for (int i=1; i<=BusCount;i++)
 		{
 			P_Calc[i]=0;
-			Q_Calc[i]=0;	
+			Q_Calc[i]=0;// Initializing P_Calc and Q_calc to zero	
 
 			erpold=ERP[i-1]+1;
 			erpcount=ERP[i];
 			int k=0;
+
 			for(int j=erpold;j<=erpcount;j++)
 			{
 				k=Cindx[j];
 
-				G_P=Y_Mat_G[j]*Math.cos(V_Ang[i]-V_Ang[k]);
-				B_P=Y_Mat_B[j]*Math.sin(V_Ang[i]-V_Ang[k]);
+				G_Multiplier=Y_Mat_G[j]*Math.cos(V_Ang[i]-V_Ang[k]);
+				B_Multiplier=Y_Mat_B[j]*Math.sin(V_Ang[i]-V_Ang[k]);		
+				G_Q_Multiplier=Y_Mat_G[j]*Math.sin(V_Ang[i]-V_Ang[k]);
+				B_Q_Multiplier=Y_Mat_B[j]*Math.cos(V_Ang[i]-V_Ang[k]);
 
-				G_Q=Y_Mat_G[j]*Math.sin(V_Ang[i]-V_Ang[k]);
-
-				B_Q=Y_Mat_B[j]*Math.cos(V_Ang[i]-V_Ang[k]);
-
-
-				P_Calc[i]= P_Calc[i]+(G_P + B_P)*V_Mag[k];
-
-				Q_Calc[i]= Q_Calc[i]+(G_Q - B_Q)*V_Mag[k];
+				P_Calc[i]= P_Calc[i]+(G_Multiplier + B_Multiplier)*V_Mag[k];
+				Q_Calc[i]= Q_Calc[i]+(G_Q_Multiplier - B_Q_Multiplier)*V_Mag[k];
 			}
 
-			P_Calc[i]=P_Calc[i]*V_Mag[i];
-			Q_Calc[i]=Q_Calc[i]*V_Mag[i];
+			P_Calc[i]=P_Calc[i]*V_Mag[i]; // Caclulate and update P_Calc and Q_Calc using
+			Q_Calc[i]=Q_Calc[i]*V_Mag[i];// Formulas given in the Lecture slides
 		}
-		System.out.println("Pcalc , Qcalc , Done Calc");
+
+		//System.out.println("End of Routine - injections ");
 	}
 
+	/*
+	 ********************************************************************************
+	 * Function Name : power_mismatch()
+	 * Function Type : Sub- Routine
+
+	 * Summary:
+  		The objective of the function is to calculate Power Mismatches at each bus 
+	 * *******************************************************************************
+	 * Characteristics:
+	 * 
+	 * Language			:	JAVA
+	 * Development Kit	: 	Eclipse -JUNO
+	 * Java Library		: 	JAVASE-1.7
+	 * CPU				: 	Intel Core i5 [TM]
+	 * Author			: 	Rajthilak Murugesan
+	 * Reference		: 	Prof. Daniel Tylavsky Lectures, EEE 574 , ASU, Fall 2012
+	 * ******************************************************************************
+	 * Input Elements :
+
+	 * Bus_Type	:	The array specifying the type of the Bus
+	 * P_Calc	:	Real Power injected in each bus
+	 * P_Gen	:	The array containing generated power at each Generator Bus
+	 * P_Load	:	The array containing real power supplied to the Load
+	 * Q_Calc	:	Reactive Power injected in each bus
+	 * Q_Gen 	:	The array containing generated reactive power at each Generator Bus
+	 * Q_Load	:	The array containing reactive power supplied to the Load
+	 * *******************************************************************************
+	 * Output Elements :
+
+	 * Max_P_Mismatch	:	Array that contains values of  mismatches in real power
+	 * Max_Q_Mismatch 	:	Array that contains values of  mismatches in reactive power
+	 * P_Mismatch		:	maximum value of the mismatch in real power
+	 * Q_Mismatch		:	maximum value of the mismatch in reactive power
+
+	 * ********************************************************************************
+	 * Internal Variables
+
+	 * i				: For loop iterator 
+	 * K				: Temporary variable used to store Cindx
+	 * G_Multiplier		: Multiplier that stores math operation on G for P 	
+	 * B_Multiplier		: Multiplier that stores math operation on B for P
+	 * G_Q_Multiplier	: Multiplier that stores math operation on G for Q 
+	 * B_Q_Multiplier	: Multiplier that stores math operation on B for Q
+
+	 * *********************************************************************************
+	 */
 	public void power_mismatch()
 	{
 		Max_P_Mismatch = 0;
 		Max_Q_Mismatch = 0;
 
+		// Initialize sizes of P and Q Mismatch Arrays
 		P_Mismatch = new double[BusCount + 1];
 		Q_Mismatch = new double[BusCount + 1];
 
+		// 'for' loop for calculation of the mismatches
 		for (int i = 1; i <= BusCount;i++)
 		{
 			P_Mismatch[i] = P_gen[i] - P_load[i] - P_Calc[i];
 			Q_Mismatch[i] = Q_gen[i] - Q_load[i] - Q_Calc[i];
 
+
+			//Update the mismatches if the bus type is notPQ/Load bus.
+
+			// Check for generator bus
 			if (Bus_Type[i] == 2)
 			{
 				Q_Mismatch[i] = 0;
 
 			}
+
+			// Check for Slack bus 
 			else if (Bus_Type[i] == 3)
 			{
 				P_Mismatch[i] = 0;
 				Q_Mismatch[i] = 0;
 
 			}
-			else
+
+			//Calculate Maximum Real and reactive power mismatches.
+			else		
 			{
 				if (Math.abs(P_Mismatch[i]) > Max_P_Mismatch)
 					Max_P_Mismatch = Math.abs(P_Mismatch[i]);
@@ -640,9 +1118,84 @@ public class Sub_Routines {
 
 			}
 		}
-		System.out.println();
+
+		//System.out.println("End of Routine - power_mismatch ");
 	}
 
+	/*
+	 ********************************************************************************
+	 * Function Name : Tinney_Ordering()
+	 * Function Type : Sub- Routine
+
+	 * Summary:
+	   The main objective of this program is to reorder the obtained Y Bus Matrix from 
+	   the previous function
+	   Tinney Ordering for the YBus Matrix obtained from Input Routine
+	   The ordering scheme used is Tinney 1
+	 * ******************************************************************************
+	 * Characteristics:
+	 * 
+	 * Language			:	JAVA
+	 * Development Kit	: 	Eclipse -JUNO
+	 * Java Library		: 	JAVASE-1.7
+	 * CPU				: 	Intel Core i5 [TM]
+	 * Author			: 	Rajthilak Murugesan
+	 * Reference		: 	Prof. Daniel Tylavsky Lectures, EEE 574 , ASU, Fall 2012
+	 * ******************************************************************************
+	 * Input Elements :
+	 *  
+	 * Bus_Type[i] 		: Array that stores Bus types
+	 * Desired_Voltage[i]: Array that stores Specified voltages
+	 * P_gen[i] 		: Array that stores Generator real power
+	 * P_load[i] 		: Array that stores real power supplied at load bus
+	 * Q_gen[i] 		: Array that stores reactive power /var on generator
+	 * Q_load[i] 		: Array that stores reactive power at laod bus 
+	 * QgenMax[i] 		: Maximum Var Limit on generator array
+	 * QgenMin[i] 		: Minimum Var limit on the generator array
+	 * V_Ang[i] 		: Voltage angles
+	 * V_Mag[i] 		: Voltage Magnitudes
+	 * ******************************************************************************
+	 * Output Elements :
+	 
+	 * Bus_Type[i] 		: Array that stores Bus types
+	 * Desired_Voltage[i]: Array that stores Specified voltages
+	 * P_gen[i] 		: Array that stores Generator real power
+	 * P_load[i] 		: Array that stores real power supplied at load bus
+	 * Q_gen[i] 		: Array that stores reactive power /var on generator
+	 * Q_load[i] 		: Array that stores reactive power at laod bus 
+	 * QgenMax[i] 		: Maximum Var Limit on generator array
+	 * QgenMin[i] 		: Minimum Var limit on the generator array
+	 * V_Ang[i] 		: Voltage angles
+	 * V_Mag[i] 		: Voltage Magnitudes
+
+	 * ******************************************************************************
+	 * Internal Elements:
+	 
+	 * tinney_Bus_Type[i] 		: Array that stores Bus types
+	 * tinney_Desired_Voltage[i]: Array that stores Specified voltages
+	 * tinney_P_gen[i] 			: Array that stores Generator real power
+	 * tinney_P_load[i] 		: Array that stores real power supplied at load bus
+	 * tinney_Q_gen[i] 			: Array that stores reactive power /var on generator
+	 * tinney_Q_load[i] 		: Array that stores reactive power at laod bus 
+	 * tinney_QgenMax[i] 		: Maximum Var Limit on generator array
+	 * tinney_QgenMin[i] 		: Minimum Var limit on the generator array
+	 * tinney_V_Ang[i] 			: Voltage angles
+	 * tinney_V_Mag[i] 			: Voltage Magnitudes
+	 * 
+	 * ********************************************************************************
+	 * Procedure 
+	  
+	 * Step 1
+	 * Compute the valency of each element using for loop 
+	 * Step 2 
+	 * Reorder Values in ascending order and sort them according to valencies
+	 * Step 3
+	 * Now , copy the values of buses into temporary arrays to perform ordering 
+	 * Step 4 
+	 * Finally , copy all the temporaray arrays back into original array
+	 * 
+	 * This Tinney ordering significantly reduces the number of fillins
+	 */
 	public void Tinney_Ordering()
 	{
 		int temp,temp1,temp2;
@@ -664,12 +1217,15 @@ public class Sub_Routines {
 		double[] tinney_Qgen_Min = new double[119];
 
 
-		// Initialising the Column index , Valency , BusOrder, NewErp and A arrays with appropriate lengths.
+		//Initialize the temporarary tinney arrays
 		int[] tinney_Cindx = new int[477];
 		int[] valency= new int[ERP.length];
 		Matrix_size= new int[ERP.length];
 
-		// Valency Computation
+		/*
+		 * Step 1
+		 * Compute the valency of each element using for loop 
+		 */
 		for(int i=1; i<=BusCount;i++)
 		{
 			temp=0;
@@ -685,12 +1241,13 @@ public class Sub_Routines {
 		//Creating Incremental Bus Number Array
 		for(int i=1;i<=BusCount;i++)
 			Matrix_size[i]=i;
-
-		/*
-		 * Ordering the Buses according to valency
-		 * 
+		
+		 
+		 /*
+		  * Step 2 
+		  * Reorder Values in ascending order 
+		  * Arrange them according to valencies
 		 */
-
 		for(int i=1;i<=BusCount;i++)
 		{
 			for(int j=1;j<BusCount;j++)
@@ -719,6 +1276,14 @@ public class Sub_Routines {
 		int k=1,t=0;
 		int v1,p;
 
+		/* Using a nested for loop ,
+		 * Perform Tinney Ordering 
+		 * If the column index is that of a diagonal  
+		 * Element the corresponding non zero element
+		 * from the input matrix to the new position and set 
+		 * that element as the Diagonal  element of that row. 
+		 */
+		
 		for(int i=1;i<=BusCount;i++)
 		{
 			v1=Matrix_size[i];
@@ -756,7 +1321,7 @@ public class Sub_Routines {
 			tinney_erp[i]=t;
 		}
 
-		//copying all elements in a temporary variable in terms of bus order
+		//Copy all the temporary variables using a for loop
 		for (int i = 1; i <= BusCount; i++)
 		{
 			tinney_BusType[i] = Bus_Type[Matrix_size[i]];
@@ -784,7 +1349,7 @@ public class Sub_Routines {
 			Y_Mat_B[l] =tinney_B[l];
 		}
 
-		// copying back elements
+		// Copy back elements into original arrays afer Tinney ordering 
 		for (int i = 1; i <= BusCount; i++)
 		{
 			Bus_Type[i] = tinney_BusType[i];
@@ -799,7 +1364,7 @@ public class Sub_Routines {
 			QgenMin[i] = tinney_Qgen_Min[i];
 		}
 
-		System.out.println();
+		//System.out.println("End of Routine- TinneyOrdering ()");
 	}
 
 	int bus_switch()
@@ -809,8 +1374,10 @@ public class Sub_Routines {
 		int z = 0;// Change variables name
 
 		Bus_Type_Switch = new int[BusCount + 1];
-		Q_max_Bus = new float[BusCount + 1];
-		Q_min_Bus = new float[BusCount + 1];
+
+
+		int[] t_Q_max_Bus = new int[BusCount+1];
+		int[] t_Q_min_Bus = new int[BusCount+1];
 
 
 		for (i = 1; i <= BusCount; i++)
@@ -822,16 +1389,16 @@ public class Sub_Routines {
 					bus_switch = 1;
 					Bus_Type[i] = 5;
 					Q_gen[i] = QgenMax[i];
-					Q_max_Bus[k++] = i;
+					t_Q_max_Bus[k++] = i;
 				}
 				if (QgenMin[i] > (Q_load[i] + Q_Calc[i]))
 				{
 					bus_switch = 1;
 					Bus_Type[i] = 4;
 					Q_gen[i] = QgenMin[i];
-					Q_min_Bus[z++] = i;
+					t_Q_min_Bus[z++] = i;
 				}
-					
+
 				if (Bus_Type[i] == 4)
 				{
 					if (V_Mag[i] < Desired_Voltage[i])
@@ -855,10 +1422,68 @@ public class Sub_Routines {
 			}
 		}
 
+		for(int j=0;j<t_Q_min_Bus.length;j++)
+		{
+			if(t_Q_min_Bus[j]!=0)
+				Q_min_Bus[j]=t_Q_min_Bus[j];
+		}
+
+		for(int j=0;j<t_Q_max_Bus.length;j++)
+		{
+			if(t_Q_max_Bus[j]!=0)
+				Q_max_Bus[j]=t_Q_max_Bus[j];
+		}
 
 		return bus_switch;
 
 	}
+
+	/*
+	 ********************************************************************************
+	 * Function Name :  create_jacobian()
+	 * Function Type : Sub- Routine
+
+	 * Summary:
+  		The objective of the function is to calcuulate the Jacobian entries 
+  		according to the given formulae. This routine updates the diagonal as well 
+  		as off-diagonal elements of the Jacobian Matrix in special cases like PV Bus 
+  		or slack bus.
+	 * *******************************************************************************
+	 * Characteristics:
+	 * 
+	 * Language			:	JAVA
+	 * Development Kit	: 	Eclipse -JUNO
+	 * Java Library		: 	JAVASE-1.7
+	 * CPU				: 	Intel Core i5 [TM]
+	 * Author			: 	Rajthilak Murugesan
+	 * Reference		: 	Prof. Daniel Tylavsky Lectures, EEE 574 , ASU, Fall 2012
+	 * ******************************************************************************
+	 * Input Elements :
+
+	 * Bus_Type	:	The array specifying the type of the Bus
+	 * BusCount	:	Bus Count is used as an iterator and is equal to No. of Buses
+	 * Cindx	:	Array that stores column indices of Y matrix elements
+	 * ERP		:	Array that stores End of Row pointers of the elements
+	 * V_Ang	: 	Array that stores Voltage angles of the bus
+	 * V_Mag	:	Array that stores Voltage Magnitude of the bus
+	 * Y_Mat_B	: 	Y-Matrix Array that contains the values  of suseptances
+	 * Y_Mat_G	: 	Y-Matrix array that stores values of conductances 
+
+	 * *******************************************************************************
+	 * Output Elements :
+
+	 * H	: H entries of the Jacobian
+	 * J	: J entries of the Jacobian
+	 * L	: L entries of the Jacobian
+	 * N	: N entries of the Jacobian
+
+	 * ********************************************************************************
+	 * Internal Variables
+
+	 * i				: For loop iterator 
+	 * K				: Temporary variable used to store Cindx
+	 * *********************************************************************************
+	 */
 
 	void create_jacobian()
 	{
@@ -873,6 +1498,8 @@ public class Sub_Routines {
 		{
 			for (int j = ERP[i - 1] + 1; j <= ERP[i]; j++)
 			{
+				// Check if the index is of non-Diagonal element
+				// Compute jacobian entries for non-diagonal elements
 				k = Cindx[j];
 				if (i != k)
 				{
@@ -881,16 +1508,25 @@ public class Sub_Routines {
 					N[j] = V_Mag[i] * (Y_Mat_G[j] * (Math.cos(V_Ang[i] - V_Ang[k])) + Y_Mat_B[j] * (Math.sin(V_Ang[i] - V_Ang[k])));
 					L[j] = V_Mag[i] * (Y_Mat_G[j] * (Math.sin(V_Ang[i] - V_Ang[k])) - Y_Mat_B[j] * (Math.cos(V_Ang[i] - V_Ang[k])));
 
+					/*
+					The above values of the Jacobian are good for a normal load 
+					and a PQ Bus.However, if the Bus type is other than P-Q Load bus 
+				 	we need to make certain modifications to the Jacobian entries. 
+				 	The other types of buses are Type2 : PV Bus and Type3: Slack Bus
+					 */
+
 					// Case : slack bus
+					// All H=J=L=N= 0
 					if (Bus_Type[i] == 3)
 						H[j] = J[j] = N[j] = L[j] = 0;
 
+					// Case : Bus Type 2
+					// The Entries J=L =0; 
 					if (Bus_Type[i] == 2)
 						J[j] = L[j] = 0;
-
 				}
 
-				//diagonal elements
+				//Calculation of diagonal entries of the Jacobian 
 				else 
 				{
 
@@ -899,14 +1535,17 @@ public class Sub_Routines {
 					N[j] = (P_Calc[i] / V_Mag[i]) + (V_Mag[i] * Y_Mat_G[j]);
 					L[j] = (Q_Calc[i] / V_Mag[i]) - (V_Mag[i] * Y_Mat_B[j]);
 
-					// Calculate H,J,N,L for slack bus
+					// The same condition holds true as the case of non-diagonal
+					//elements 
+
+					// Case : Slack Bus 
 					if (Bus_Type[i] == 3)
 					{
 						H[j] = L[j] = 1;
 						J[j] = N[j] = 0;
 					}
 
-					//Calc H,J,N,L for PV bus 
+					//Case : Type 2 Bus or PV bus 
 					if (Bus_Type[i] == 2)
 					{
 						J[j] = 0;
@@ -917,17 +1556,118 @@ public class Sub_Routines {
 			}
 		}
 
+		//System.out.println("End of Routine - create_Jacobian ");
 	}
+
+	/*
+	 ********************************************************************************
+	 * Function Name :  Factorize_jacobian()
+	 * Function Type : Sub- Routine
+
+	 * Summary:
+  		The ordered data structure stored by rows obtained after the columntorow( ) 
+  		is used to perform the Numerical factorization to get the L/U matrix for the 
+  		Jacobian matrix. This routine factorizes the A matrix to corresponding L,
+  		D and U factors.L Matrix is stored by Columns and U Matrix is stored by rows.
+
+	 * *******************************************************************************
+	 * Characteristics:
+	 * 
+	 * Language			:	JAVA
+	 * Development Kit	: 	Eclipse -JUNO
+	 * Java Library		: 	JAVASE-1.7
+	 * CPU				: 	Intel Core i5 [TM]
+	 * Author			: 	Rajthilak Murugesan
+	 * Reference		: 	Prof. Daniel Tylavsky Lectures, EEE 574 , ASU, Fall 2012
+	 * ******************************************************************************
+	 * Input Elements :
+
+	 * Bus_Type	:	The array specifying the type of the Bus
+	 * BusCount	:	Bus Count is used as an iterator and is equal to No. of Buses
+	 * Cindx	:	Array that stores column indices of Y matrix elements
+	 * ERP		:	Array that stores End of Row pointers of the elements
+	 * V_Ang	: 	Array that stores Voltage angles of the bus
+	 * V_Mag	:	Array that stores Voltage Magnitude of the bus
+	 * Y_Mat_B	: 	Y-Matrix Array that contains the values  of suseptances
+	 * Y_Mat_G	: 	Y-Matrix array that stores values of conductances 
+	 * H		: 	H entries of the Jacobian
+	 * J		: 	J entries of the Jacobian
+	 * L		: 	L entries of the Jacobian
+	 * N		: 	N entries of the Jacobian
+
+	 * *******************************************************************************
+	 * Output Elements :
+
+	 * Diag_H 	:	An array that stores the diagonal elemnts of H
+	 * Diag_J 	:	An array that stores the diagonal elemnts of J
+	 * Diag_L 	:	An array that stores the diagonal elemnts of N
+	 * Diag_N 	:	An array that stores the diagonal elemnts of L
+	 * LCO_H 	:	Array that stores lower diagonal elements of the H+Fill Elements 
+	 * LCO_J 	:	Array that stores lower diagonal elements of the J+Fill Elements
+	 * LCO_L 	:	Array that stores lower diagonal elements of the L+Fill Elements
+	 * LCO_N 	:	Array that stores lower diagonal elements of the N+Fill Elements
+	 * URO_H 	:	Array that stores upperr diagonal elements of the H+Fill Elements 
+	 * URO_J 	:	Array that stores upperr diagonal elements of the J+Fill Elements 
+	 * URO_L 	:	Array that stores upperr diagonal elements of the N+Fill Elements 
+	 * URO_N 	:	Array that stores upperr diagonal elements of the L+Fill Elements 
+	 * 
+	 * ********************************************************************************
+	 * Internal Variables:
+
+	 * Diag_Multiplier	: Scalar that stores the value of Diag
+	 * divider			: Scalar that stores denominator of Ex Accum Product
+	 * ExAccum_H 		: Array that stores Exaccumulator values of H 
+	 * ExAccum_J 		: Array that stores Exaccumulator values of J 
+	 * ExAccum_L 		: Array that stores Exaccumulator values of L 
+	 * ExAccum_N 		: Array that stores Exaccumulator values of N 
+	 * i 				: for loop iterator
+	 * ICPL 			: An array that stores Initial Column Pointers of L
+	 * Link_LU 			: Self–referential linked list used in Numerical Factorization
+	 * next_r_link		: temporary link variable used to handle linked list
+	 * node 			: temporary link variable used to handle linked list
+	 * R_index 			: Row Indices variable
+	 * rx 				: Variable used in updating and creating linked lists
+	 * rxlink 			: Temporary link variable used in linked list
+	 * templink			: Temporary link variable used in linked list 
+	 * URO_Counter		: Counter used for keeping track of URO elements
+
+	 * *********************************************************************************
+	 * Step by Step Procedure :
+	Step 0:
+	Initialization.
+	Set RIndx=1
+	Setup ICPL array to point to the beginning of all columns of L (rows of U).
+	For each row (RIndx):
+	Step 1:
+	Load ExAcum with elements from row RIndx.
+	Step 2:
+	Perform update of elements to the right of the diagonal (ROD) and 
+	left of diagonal (LOD) using expanded accumulator method[ H/J/N/L]. Update Link 
+	after each row(used in updating row Rindx) is used. (Use Link to determine col. indices 
+	of elements LOD, i.e., row numbers used when performing update on elements ROD. After 
+	each row is used for update operation, associate its index in Link with the row number
+	for which it will next be needed when performing an update operation.
+	Step 3:
+	Zero all links in Link associated with row RIndx. 
+	(Since factorization of row is complete, links not needed.)
+	Step 4:
+	Invert diagonal element and store in Diag H/J/N/L(RIndx).
+	Step 5:
+	Store elements to the right of the diagonal.
+	Step 6:
+	Add RIndx to appropriate location in linked list Link.
+	 */
 
 	void Factorize_jacobian()
 	{
-		// Initializing ERPU index counter and link buffer tlink 
-		int ERPU_Shift_Index = 0;
-		int tlink = 0;
 
-		// Initializing Lu_Link, ICPL, ExAccum, URO, LCO, Diag arrays to perform the numerical
-		// section of LU factorization.
-		Lu_Link = new int[BusCount + 1];
+		int ERPU_Shifter = 0;
+		//Local Variable used to right shift ERPU
+
+		int tlink = 0;// Temporary link used in Linked List operation
+
+		// Initializing Link_LU, ICPL, ExAccum, URO, LCO, Diag arrays 
+		Link_LU = new int[BusCount + 1];
 		ICPL = new int[BusCount];
 		ExAccum_H = new double[BusCount + 1];
 		ExAccum_J = new double[BusCount + 1];
@@ -945,27 +1685,54 @@ public class Sub_Routines {
 		Diag_J = new double[BusCount + 1];
 		Diag_N = new double[BusCount + 1];
 		Diag_L = new double[BusCount + 1];
-		int Rindx = 0;
-		double Diag_buf = 0;
-		//int RX_l = 0;
-		//Initializing ICPL using ERPU to point to beginning of all columns in array for the lower triangular matrix.
+
+		int R_index = 0;
+		double Diag_Multiplier = 0;
+
+		double H1=0, H2=0;
+		double L1=0,L2=0;
+		double N1=0, N2=0;
+		double J1=0,J2=0;
+
+		/* 
+		 * Step 0: 
+		 * Initialize 
+		 * Rindx -> Update the row to be processed into Rindx  
+		 * Link-> Zero Link Array 28. 
+		 * ICPL -> Right Shift and add 1 to the this array 
+		 */
+
 		for (int i = 1; i <BusCount; i++)
 		{
-			ERPU_Shift_Index = ERPU[i - 1];
-			ICPL[i] = ERPU_Shift_Index + 1;
+			ERPU_Shifter = ERPU[i - 1];
+			ICPL[i] = ERPU_Shifter + 1;
 		}
 
+		//Initialize an URO_Counter element which is used to update URO
 		int URO_Counter = 1;
 
-		// Performing the Numerical factorization
-		for (Rindx = 1; Rindx <= BusCount; Rindx++) // loop for counting rows
+		/* 
+		 * Step 1: 
+		 * a,b Zero Ex-Accum using Link, CindxU_ordered
+		 * c Using Cindx , link Update Ex-Accum values
+		 */
+
+		/*
+		 * Using a nested for loop and erp as arguments
+		 * Access each element of ERPU and zero the Ex-accum.
+		 * Pl Note: The Ex-accum isn't required to be zeroed for 
+		 * Rindx-1 iteration. Where, 
+		 * Rindx this row index being processed 
+		 */
+
+
+		for (R_index = 1; R_index <= BusCount; R_index++) // loop for counting rows
 		{
-			if (Rindx < BusCount)
+			if (R_index < BusCount)
 			{
-				for (int j = ERPU[Rindx - 1] + 1; j <= ERPU[Rindx]; j++)
+				for (int j = ERPU[R_index - 1] + 1; j <= ERPU[R_index]; j++)
 				{
-					//Initializing ExAccum using CindxU ordered.
-					//This initialisation is performed for all rows except last row.
+
 					ExAccum_H[CindxU_Ordered[j]] = 0;
 					ExAccum_J[CindxU_Ordered[j]] = 0;
 					ExAccum_N[CindxU_Ordered[j]] = 0;
@@ -973,10 +1740,14 @@ public class Sub_Routines {
 				}
 			}
 
-			//Initializing ExAccum to 0 using link_1 array 
-			//this initialization is performed for all rows.
-			int node = Rindx, templink;
-			while ((templink = Lu_Link[node]) != 0)
+			/*  
+			 * Using a While loop, 
+			 * Traverse the Link Array Link_LU, and 
+			 * Zero the Ex-accum of the corresponding Linkptr to zero
+			 */
+
+			int node = R_index, templink;
+			while ((templink = Link_LU[node]) != 0)
 			{
 				ExAccum_H[templink] = 0;
 				ExAccum_J[templink] = 0;
@@ -985,8 +1756,8 @@ public class Sub_Routines {
 				node = templink;
 			}
 
-			// Copying the matrix elements in the ExAccum from MatrixElements using ERP.
-			for (int j = ERP[Rindx - 1] + 1; j <= ERP[Rindx]; j++)
+
+			for (int j = ERP[R_index - 1] + 1; j <= ERP[R_index]; j++)
 			{
 				ExAccum_H[Cindx[j]] = H[j];
 				ExAccum_J[Cindx[j]] = J[j];
@@ -997,19 +1768,33 @@ public class Sub_Routines {
 			double multiplier_N = 0;
 			double multiplier_J = 0;
 			double multiplier_L = 0;
+			//Multiplier variable to be used in URO operation in EXAccum
 
 			List<Integer> Node_rx = new ArrayList<Integer>();
+			// List of Nodes is used for adding rx to linkedlists dynamically
+
 			int rx1;
-			tlink = Rindx;
-			// the following while loop section initializes Link_LU array to zero using Rindx
-			while ((Lu_Link[Rindx]) != 0)
+			tlink = R_index;
+
+			/*
+			 * Step2 
+			 * Initilaize rx=0;
+			 * Search Link_LU for Next greater value
+			 * If there is no element , Proceed to step 3 
+			 */ 
+			/* 
+			 * Using a While Loop , Perform 
+			 * Traversing , Updating and adding links 
+			 */
+
+			while ((Link_LU[R_index]) != 0)
 			{
 
 				while (true)
 				{
-					if ((rx1 = Lu_Link[tlink]) != 0)
+					if ((rx1 = Link_LU[tlink]) != 0)
 					{
-						Lu_Link[tlink] = 0;
+						Link_LU[tlink] = 0;
 						Node_rx.add(rx1);
 						tlink = rx1;
 					}
@@ -1019,11 +1804,9 @@ public class Sub_Routines {
 
 				int rxlink = 0, nextnod;
 
-				if(Rindx == 118)
+				if(R_index == 118)
 					System.out.println();
-				// Updating ExAccum using URO and ERPU
-				//foreach (int rx in Node_rx)
-				//sint rx = 0;
+
 				for (Integer rx:Node_rx)
 				{
 
@@ -1031,6 +1814,11 @@ public class Sub_Routines {
 					multiplier_N = ExAccum_N[rx];
 					multiplier_J = ExAccum_J[rx];
 					multiplier_L = ExAccum_L[rx];
+
+					// Update active Exaccum by subtracting the product of 
+					//multiplier and URO 
+					// Remember, Multiplier is the ExAccum[rx] 
+					//of corresponding rx.
 
 					for (int z = ERPU[rx - 1] + 1; z <= ERPU[rx]; z++)
 					{
@@ -1041,8 +1829,8 @@ public class Sub_Routines {
 
 					}
 
-					// Initializing LCO using ExAccum and diagonal
-					//if (ICPL[rx] < ColInd)
+					//Update LCO Vales and increment next 
+					//LCO Pointers accordingly
 
 					LCO_H[ICPL[rx]] = ExAccum_H[rx] * Diag_H[rx] + ExAccum_N[rx] * Diag_J[rx];
 					LCO_N[ICPL[rx]] = ExAccum_H[rx] * Diag_N[rx] + ExAccum_N[rx] * Diag_L[rx];
@@ -1050,133 +1838,267 @@ public class Sub_Routines {
 					LCO_L[ICPL[rx]] = ExAccum_J[rx] * Diag_N[rx] + ExAccum_L[rx] * Diag_L[rx];
 
 					ICPL[rx]++;
+					//Simultaneously, update the rxlink variable
 
-
-					// Initializing Link_Lu array to zero using rx
+					//Initializing Link Array using rx 
+					//Update rx only if it is greater than ICPl of 
+					//the corresponding index
 					if (ICPL[rx] < CindxU_Ordered.length)
 						rxlink = CindxU_Ordered[ICPL[rx]];
 
+					//Traverse the list , searching for 
+					//the next non-zero position
 
 					if (ICPL[rx] <= ERPU[rx])
-					{ // traversing the link array till it finds the Lu_Link[] =0
-						while ((nextnod = Lu_Link[rxlink]) != 0)
+					{ 
+						while ((nextnod = Link_LU[rxlink]) != 0)
 						{
-							rxlink = Lu_Link[nextnod];
+							rxlink = Link_LU[nextnod];
 							if (rxlink == 0)
 							{
 								rxlink = nextnod;
 								break;
 							}
 						}
-						// updating the above position in the Lu_Link with rx
-						Lu_Link[rxlink] = rx;
+
+						Link_LU[rxlink] = rx;
 					}
 				}
 			}
-			// Updating Diag array by storing the inverse of the diagonal elements in the accumulator 
-			//Diag[Rindx] = 1 / ExAccum[Rindx];
-			double Deno_temp;
 
-			Deno_temp = (ExAccum_H[Rindx] * ExAccum_L[Rindx] - ExAccum_N[Rindx] * ExAccum_J[Rindx]);
+			/*
+			 * Step 4 
+			 * Invert ExAccum product and store in Diagonal Array 
+			 */
+			double divider ;
 
+			divider  = (ExAccum_H[R_index] * ExAccum_L[R_index] - ExAccum_N[R_index] * ExAccum_J[R_index]);
 
-			//if(Deno_temp!=0)
-			Diag_buf = 1 / Deno_temp;
+			Diag_Multiplier = 1 / divider ;
 
-			//else if ((Deno_temp == 0) &&(Rindx==118))
-			// Diag_buf=1;
+			Diag_H[R_index] = ExAccum_L[R_index] * Diag_Multiplier;
+			Diag_N[R_index] = -ExAccum_N[R_index] * Diag_Multiplier;
+			Diag_J[R_index] = -ExAccum_J[R_index] * Diag_Multiplier;
+			Diag_L[R_index] = ExAccum_H[R_index] * Diag_Multiplier;
 
-			Diag_H[Rindx] = ExAccum_L[Rindx] * Diag_buf;
-			Diag_N[Rindx] = -ExAccum_N[Rindx] * Diag_buf;
-			Diag_J[Rindx] = -ExAccum_J[Rindx] * Diag_buf;
-			Diag_L[Rindx] = ExAccum_H[Rindx] * Diag_buf;
+			/*
+			 * Step 5 
+			 * Multiply active Exaccum by Diag and store in URO 
+			 */ 
 
-			// Updating URO Value with the product of ExAccum and inverse of the diagonal element
-			if (Rindx < BusCount)
+			// Updating URO Value
+			if (R_index < BusCount)
 			{
-				for (int j = ERPU[Rindx - 1] + 1; j <= ERPU[Rindx]; j++)
+				for (int j = ERPU[R_index - 1] + 1; j <= ERPU[R_index]; j++)
 				{
-					//URO[URO_Counter] = Diag[Rindx] * ExAccum[N_CindxU[j]];
 
-					URO_H[URO_Counter] = Diag_H[Rindx] * ExAccum_H[CindxU_Ordered[j]] + Diag_N[Rindx] * ExAccum_J[CindxU_Ordered[j]];
-					URO_N[URO_Counter] = Diag_H[Rindx] * ExAccum_N[CindxU_Ordered[j]] + Diag_N[Rindx] * ExAccum_L[CindxU_Ordered[j]];
-					URO_J[URO_Counter] = Diag_J[Rindx] * ExAccum_H[CindxU_Ordered[j]] + Diag_L[Rindx] * ExAccum_J[CindxU_Ordered[j]];
-					URO_L[URO_Counter] = Diag_J[Rindx] * ExAccum_N[CindxU_Ordered[j]] + Diag_L[Rindx] * ExAccum_L[CindxU_Ordered[j]];
+					H1= Diag_H[R_index] * ExAccum_H[CindxU_Ordered[j]];
+					H2= Diag_N[R_index] * ExAccum_J[CindxU_Ordered[j]];
+
+					N1=Diag_H[R_index] * ExAccum_N[CindxU_Ordered[j]];	
+					N2=Diag_N[R_index] * ExAccum_L[CindxU_Ordered[j]];
+
+					J1 = Diag_J[R_index] * ExAccum_H[CindxU_Ordered[j]];
+					J2= Diag_L[R_index] * ExAccum_J[CindxU_Ordered[j]];
+
+					L1 = Diag_J[R_index] * ExAccum_N[CindxU_Ordered[j]];
+					L2 = Diag_L[R_index] * ExAccum_L[CindxU_Ordered[j]];
+
+					URO_H[URO_Counter] = H1 + H2;
+					URO_N[URO_Counter] = N1 + N2;
+					URO_J[URO_Counter] = J1 + J2;
+					URO_L[URO_Counter] = L1 + L2;
 					URO_Counter++;
 				}
 
-				// Adding Rindx to Lu_Link array 
-				int link_r_no, NextNode;
+				// Adding Rindx to Linked List
 
-				link_r_no = CindxU_Ordered[ICPL[Rindx]];
-				// Traversing the Lu_Link array till it finds Lu_link[] = 0
-				while ((NextNode = Lu_Link[link_r_no]) != 0)
+				int next_r_link, NextNode;
+				next_r_link = CindxU_Ordered[ICPL[R_index]];
+				
+				/* 
+				* Step 6 
+				* Add Rindx to linked list associated with 
+				* CindxU_Ordered(ICPL(Rindx))
+				*/
+
+				while ((NextNode = Link_LU[next_r_link]) != 0)
 				{
-					link_r_no = Lu_Link[NextNode];
-					if (link_r_no == 0)
+					next_r_link = Link_LU[NextNode];
+					
+					/*
+					* Check if the link , nextrlink is zero,
+					* If Yes, update it to point the LinkNode
+					* Continue iteration until while loop fails
+					*/
+					if (next_r_link == 0)
 					{
-						link_r_no = NextNode;
+						next_r_link = NextNode;
 						break;
 					}
 				}
-				// updating the above position with Rindx.
-				Lu_Link[link_r_no] = Rindx;
+				Link_LU[next_r_link] = R_index;
 			}
-
 		}
-
-		System.out.println();
-
+		
+		//System.out.println("End of Routine - create_Jacobian ");
 	}
 
+	
+	/*
+	 ********************************************************************************
+	 * Function Name : Forward_solve()
+	 * Function Type : Sub- Routine
+
+	 * Summary:
+  		Forward_solve(); performs Forward, Diagonal Substitution for the sparse matrix. 
+  		The data required is given by previous operations. 
+  		For forward substitution L is considered to be stored by columns. 
+
+	 * *******************************************************************************
+	 * Characteristics:
+	 * 
+	 * Language			:	JAVA
+	 * Development Kit	: 	Eclipse -JUNO
+	 * Java Library		: 	JAVASE-1.7
+	 * CPU				: 	Intel Core i5 [TM]
+	 * Author			: 	Rajthilak Murugesan
+	 * Reference		: 	Prof. Daniel Tylavsky Lectures, EEE 574 , ASU, Fall 2012
+	 * ******************************************************************************
+	 * Input Elements :
+	 * 
+	 * BusCount	: Bus Count is used as an iterator and is equal to No. of Buses
+	 * CindxU_Ordered: An array that stores col indices after ordering 
+	 * 	Diag_H 	:	An array that stores the diagonal elemnts of H
+	 * Diag_J 	:	An array that stores the diagonal elemnts of J
+	 * Diag_L 	:	An array that stores the diagonal elemnts of N
+	 * Diag_N 	:	An array that stores the diagonal elemnts of L
+	 * LCO_H 	:	Array that stores lower diagonal elements of the H+Fill Elements 
+	 * LCO_J 	:	Array that stores lower diagonal elements of the J+Fill Elements
+	 * LCO_L 	:	Array that stores lower diagonal elements of the L+Fill Elements
+	 * LCO_N 	:	Array that stores lower diagonal elements of the N+Fill Elements
+	  
+	 * *******************************************************************************
+	 * Output Elements :
+
+	 * delta_V_Ang		: Difference in Voltage angles which stores P Mismatch
+	 * delta_V_Mag		: Difference in Voltage angles which stores Q Mismatch
+	  
+	 * ********************************************************************************
+	 * Internal Variables:
+	  
+	 * i,j				:	for loop variables 
+	 * solve_variable	:	Solve variable that stores value of CindxU after ordering 
+	 * Temp_P			:	Temporary variable for storing P Mismatch
+	 * Temp_Q			:	Temporary varible for storing Q mismatch
+	
+	 * *********************************************************************************
+	 */
+	
 	void Forward_solve()
 	{
-		// Initializing s,d buffer elements
+		
 
 		delta_V_Ang = new double[BusCount + 1];
 		delta_V_Mag = new double[BusCount + 1];
 
-		double P_buf = 0, Q_buf=0;
-		int[] RindxLO = new int[Cindx.length];
+		double Temp_P = 0, Temp_Q=0;
 
-
-		// Applying the forward substituiton routine and updating 'w' array
+		// Outer for loop is for each Bus 
+		// Iner for loop is for accessing each element
 		for (int i = 1; i <= BusCount; i++)
 		{
 			for (int j = ERPU[i - 1] + 1; j <= ERPU[i]; j++)
 			{
 				solve_variable = CindxU_Ordered[j];
-				P_buf = P_Mismatch[solve_variable] - LCO_H[j] * P_Mismatch[i] - LCO_N[j] * Q_Mismatch[i];
-				Q_buf = Q_Mismatch[solve_variable] - LCO_J[j] * P_Mismatch[i] - LCO_L[j] * Q_Mismatch[i];
+				//stores column index in a scalar variable;
+				
+				//initialization of the variables P_Mismatch and Q_Mismatch
+				//updated values of the calculated powers
+				Temp_P = P_Mismatch[solve_variable] - LCO_H[j] * P_Mismatch[i] - LCO_N[j] * Q_Mismatch[i];
+				Temp_Q = Q_Mismatch[solve_variable] - LCO_J[j] * P_Mismatch[i] - LCO_L[j] * Q_Mismatch[i];
 
-				P_Mismatch[solve_variable] = P_buf;
-				Q_Mismatch[solve_variable] = Q_buf;
+				P_Mismatch[solve_variable] = Temp_P;
+				Q_Mismatch[solve_variable] = Temp_Q;
 
 			}
 		}
 
-		//  The objective now is to compute the X Matrix  via the product of inverse of diagonal elements
-		//  and W matrix  in the Numerical Factorization routine 
-
+		//Multiplication of the P_Mismatch and Q_Mismatch with the diagonal elements;
 		for (int i = 1; i <= BusCount; i++)
 		{
-			P_buf = Diag_H[i] * P_Mismatch[i] + Diag_N[i] * Q_Mismatch[i];
-			Q_buf = Diag_J[i] * P_Mismatch[i] + Diag_L[i] * Q_Mismatch[i];
-			P_Mismatch[i] = P_buf;
-			Q_Mismatch[i] = Q_buf;
+			Temp_P = Diag_H[i] * P_Mismatch[i] + Diag_N[i] * Q_Mismatch[i];
+			Temp_Q = Diag_J[i] * P_Mismatch[i] + Diag_L[i] * Q_Mismatch[i];
+			P_Mismatch[i] = Temp_P;
+			Q_Mismatch[i] = Temp_Q;
 
 		}
-
+		
+		//Copy Arrays back 
 		delta_V_Ang = P_Mismatch;
-		delta_V_Mag = Q_Mismatch;//Copying Arrays 
+		delta_V_Mag = Q_Mismatch;
+		
+		//System.out.println("End of Routine - Forward_Solve ");
 	}
 
+	
+
+	/*
+	 ********************************************************************************
+	 * Function Name : Backward_solve()
+	 * Function Type : Sub- Routine
+
+	 * Summary:
+  		Backward_solve() Backward Substitution for the sparse matrix. 
+  		The data required is given by previous operations. 
+  		The backward substitution is used to arrive at the power flow solution
+
+	 * *******************************************************************************
+	 * Characteristics:
+	 * 
+	 * Language			:	JAVA
+	 * Development Kit	: 	Eclipse -JUNO
+	 * Java Library		: 	JAVASE-1.7
+	 * CPU				: 	Intel Core i5 [TM]
+	 * Author			: 	Rajthilak Murugesan
+	 * Reference		: 	Prof. Daniel Tylavsky Lectures, EEE 574 , ASU, Fall 2012
+	 * ******************************************************************************
+	 * Input Elements :
+	 * 
+	 * BusCount	: Bus Count is used as an iterator and is equal to No. of Buses
+	 * CindxU_Ordered: An array that stores col indices after ordering 
+	 * Diag_H 	:	An array that stores the diagonal elemnts of H
+	 * Diag_J 	:	An array that stores the diagonal elemnts of J
+	 * Diag_L 	:	An array that stores the diagonal elemnts of N
+	 * Diag_N 	:	An array that stores the diagonal elemnts of L
+	 * URO_H 	:	Array that stores upperr diagonal elements of the H+Fill Elements 
+	 * URO_J 	:	Array that stores upperr diagonal elements of the J+Fill Elements 
+	 * URO_L 	:	Array that stores upperr diagonal elements of the N+Fill Elements 
+	 * URO_N 	:	Array that stores upperr diagonal elements of the L+Fill Elements 
+	  
+	 * *******************************************************************************
+	 * Output Elements :
+
+	 * delta_V_Ang		: Difference in Voltage angles which stores P Mismatch
+	 * delta_V_Mag		: Difference in Voltage angles which stores Q Mismatch
+	  
+	 * ********************************************************************************
+	 * Internal Variables:
+	  
+	 * i,j				:	for loop variables 
+	 * solve_variable	:	Solve variable that stores value of CindxU after ordering 
+	 * p_temp			:	Temporary variable for storing P Mismatch
+	 * q_temp			:	Temporary varible for storing Q mismatch
+	
+	 * *********************************************************************************
+	 */
+	
 	void Backward_solve()
 	{
 		double p_temp = 0;
 		double q_temp = 0;
 
-		// Applying the backward substitution routine using URO (Upper triangular row indices)
+		//Apply the backward substitution routine using URO
 		for (int i = BusCount-1; i >= 1; i--)
 		{
 			for (int j = ERPU[i]; j >= ERPU[i - 1] + 1; j--)
@@ -1192,7 +2114,11 @@ public class Sub_Routines {
 
 		delta_V_Ang = P_Mismatch;
 		delta_V_Mag = Q_Mismatch;
+		
+		//System.out.println("End of Routine - Backward_solve() ");
 	}
+
+	
 
 	void compute_lineflows()
 	{
@@ -1215,9 +2141,10 @@ public class Sub_Routines {
 
 	}
 
+	
+	
 	void Solve()
 	{
-		//int flip=0;
 		float[] Rmax= new float[120]; 
 		float[] Rmin=new float[120];
 
@@ -1230,22 +2157,31 @@ public class Sub_Routines {
 		rowtocolumn();
 		columntorow();
 		initialize_voltage();
-		
-		int flip=0;
 
+		int flip=0;
+		int count=0;
+		int bus_switch_count=0;
 		int iteration=1;
 		for(iteration=1;iteration<=10;iteration++)
 		{
-			
-			injection_flow();
 
-			if (iteration>3)
+			injections();
+
+			if (bus_switch_count==0)
 			{
-				flip = bus_switch();
+				if (iteration>3)
+				{
+					flip = bus_switch();
 
-				if(flip==2)
-					injection_flow();	
+					if(flip==2)
+						injections();	
+
+					bus_switch_count=-1;
+				}
 			}
+
+			if(bus_switch_count==-1)
+				flip =0;
 
 			power_mismatch();
 
@@ -1264,6 +2200,7 @@ public class Sub_Routines {
 					Rmax[k]= Q_max_Bus[k];
 					Rmin[k] = Q_min_Bus[k];
 				}
+
 			}
 
 			create_jacobian();
@@ -1277,28 +2214,35 @@ public class Sub_Routines {
 				V_Ang[i] =V_Ang[i] + delta_V_Ang[i];
 			}
 
+			count++;
+			System.out.println(count);
 
-			System.out.println();
 		}
 
 		ReOrdering();
 
-		System.out.println("The Powerflow successfully converges after "+iteration+" Newton-Raphson iterations ");
-		
+		System.out.println("The Powerflow successfully converges after "+(iteration+1)+" Newton-Raphson iterations ");
+
 		for(double v:V_Mag)
 			System.out.println(v);
-		
+
 		for(double q:V_Ang)
 			System.out.println(q);
 
 		//	compute_lineflows();
 	}
 
+	
+
 	private void ReOrdering() {
-		// TODO Auto-generated method stub
+
+		int count = 0;
 
 		double[] t_V_Mag = new double[119];
 		double[] t_V_Ang = new double[119];
+
+		int[] t_Q_max_Bus = new int[BusCount+1];
+		int[] t_Q_min_Bus = new int[BusCount+1];
 
 		for(int i=1;i<=BusCount;i++)
 		{
@@ -1312,7 +2256,26 @@ public class Sub_Routines {
 			}
 		}
 
+
+		// Identifying Bus on Limits
+		for(int k=0; k<Q_max_Bus.length;k++)
+		{
+			if(Q_max_Bus[k]!=0)
+				t_Q_max_Bus[count] =  Matrix_size[Q_max_Bus[k]];
+		}
+
+		for(int k=0; k<Q_min_Bus.length;k++)
+		{
+			if(Q_min_Bus[k]!=0)
+			{
+				t_Q_min_Bus[count] =  Matrix_size[Q_min_Bus[k]];
+				count++;
+			}
+		}
+
 		V_Mag = t_V_Mag;
 		V_Ang = t_V_Ang;
+		Q_max_Bus=t_Q_max_Bus;
+		Q_min_Bus=t_Q_min_Bus;
 	}
 }
